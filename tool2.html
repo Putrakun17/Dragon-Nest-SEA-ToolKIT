@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -694,7 +694,7 @@
         <span style="font-size:11px;color:var(--muted)" id="breakNote"></span>
       </div>
 
-      <div class="result-msg idle" id="resultMsg">⚔ Siap untuk enhance...</div>
+      <div class="result-msg idle" id="resultMsg">⚔ Ready to enhance...</div>
 
       <button class="btn-enhance" id="btnEnhance" onclick="doEnhance()">⚡ Enhance</button>
 
@@ -721,12 +721,12 @@
         <div class="auto-speed-label" id="autoStatusLabel"></div>
       </div>
 
-      <button class="btn-reset" onclick="resetAll()">↺ Reset Semua</button>
+      <button class="btn-reset" onclick="resetAll()">↺ Reset All</button>
     </div>
 
     <!-- MATERIAL COST -->
     <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Biaya Per Enhance</div>
+      <div class="card-title">Cost Per Enhance</div>
       <div class="mat-row">
         <span class="mat-name">🪙 Gold</span>
         <span class="mat-val" id="matGold">50,000</span>
@@ -743,7 +743,7 @@
 
     <!-- INVENTORY -->
     <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Inventory Material</div>
+      <div class="card-title">Material Inventory</div>
       <div class="inv-section">
         <div class="inv-row">
           <label>🪙 Gold</label>
@@ -757,28 +757,28 @@
           <label>🌱 Twisted Root</label>
           <input type="number" id="invRoot" value="0" min="0" oninput="checkInv()">
         </div>
-        <div class="inv-status" id="invStatus">Masukkan jumlah material yang dimiliki</div>
+        <div class="inv-status" id="invStatus">Enter your material quantities</div>
       </div>
     </div>
 
     <!-- SESSION STATS -->
     <div class="card">
-      <div class="card-title">Statistik Sesi</div>
+      <div class="card-title">Session Statistics</div>
       <div class="stat-grid">
         <div class="stat-item">
           <div class="stat-key">Total Attempt</div>
           <div class="stat-val jade" id="statAttempt">0</div>
         </div>
         <div class="stat-item">
-          <div class="stat-key">Sukses</div>
+          <div class="stat-key">Success</div>
           <div class="stat-val jade" id="statSuccess">0</div>
         </div>
         <div class="stat-item">
-          <div class="stat-key">Gagal</div>
+          <div class="stat-key">Failed</div>
           <div class="stat-val" style="color:var(--red-light)" id="statFail">0</div>
         </div>
         <div class="stat-item">
-          <div class="stat-key">Turun Level</div>
+          <div class="stat-key">Level Drop</div>
           <div class="stat-val gold" id="statDown">0</div>
         </div>
       </div>
@@ -803,7 +803,7 @@
   <div>
     <!-- CURRENT STATS -->
     <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Stat Saat Ini</div>
+      <div class="card-title">Current Stats</div>
       <div class="stat-grid">
         <div class="stat-item">
           <div class="stat-key">ATK</div>
@@ -832,15 +832,15 @@
     <div class="card" style="margin-bottom:16px">
       <div class="card-title">Enhancement Log</div>
       <div class="log-box" id="logBox">
-        <div class="log-entry">— Simulator siap. Pilih level dan mulai enhance. —</div>
+        <div class="log-entry">— Simulator ready. Select a level and start enhancing. —</div>
       </div>
     </div>
 
     <!-- REFERENCE TABLE -->
     <div class="card">
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('tbl')">Tabel Referensi</div>
-        <div class="tab" onclick="switchTab('note')">Catatan</div>
+        <div class="tab active" onclick="switchTab('tbl')">Reference Table</div>
+        <div class="tab" onclick="switchTab('note')">Notes</div>
       </div>
       <div class="tab-content active" id="tab-tbl">
         <div class="table-wrap">
@@ -862,12 +862,12 @@
       </div>
       <div class="tab-content" id="tab-note">
         <div class="note-box">
-          <strong>Aturan Penurunan Level:</strong><br>
-          Ketika gagal di level +9→+10, +19→+20, +29→+30, +39→+40, +49→+50:<br>
-          • 45% kemungkinan level turun 1<br>
-          • 55% level tetap<br><br>
-          <strong>Break Rate:</strong> Semua enhance bertanda "No Break" — item tidak bisa hancur.<br><br>
-          <strong>Bintang Tier:</strong><br>
+          <strong>Level Drop Rules:</strong><br>
+          When failing at level +9→+10, +19→+20, +29→+30, +39→+40, +49→+50:<br>
+          • 45% chance level drops by 1<br>
+          • 55% level stays the same<br><br>
+          <strong>Break Rate:</strong> All enhancements marked "No Break" — item cannot be destroyed.<br><br>
+          <strong>Star Tier:</strong><br>
           +10 → Final Damage +1,400 (dari 1,300)<br>
           +20 → Final Damage +1,500 · Elem 15%<br>
           +30 → Final Damage +1,600 · Elem 20%<br>
@@ -1066,8 +1066,8 @@ function updateUI() {
     const isDrop = DROP_LEVELS.includes(lvl);
     document.getElementById('successBadge').textContent = `✓ ${d[1]}%`;
     document.getElementById('breakNote').textContent = isDrop
-      ? `⚠ Gagal: 45% chance turun ke +${lvl - 1}`
-      : (d[1] < 100 ? `Gagal: level tetap` : '');
+      ? `⚠ Fail: 45% chance to drop to +${lvl - 1}`
+      : (d[1] < 100 ? `Fail: level stays` : '');
 
     // highlight ref table
     document.querySelectorAll('.ref-table tr.highlight').forEach(r => r.classList.remove('highlight'));
@@ -1078,7 +1078,7 @@ function updateUI() {
     }
   } else {
     document.getElementById('successBadge').textContent = '✓ MAX';
-    document.getElementById('breakNote').textContent = 'Level Maksimum Tercapai!';
+    document.getElementById('breakNote').textContent = 'Maximum Level Reached!';
   }
 
   // Stats
@@ -1137,7 +1137,7 @@ function doEnhance(silent = false) {
     if (!silent) {
       const msgEl = document.getElementById('resultMsg');
       msgEl.className = 'result-msg fail';
-      msgEl.textContent = `⚠ Material tidak cukup untuk enhance ke +${lvl + 1}!`;
+      msgEl.textContent = `⚠ Not enough materials to enhance to +${lvl + 1}!`;
     }
     return 'nomats';
   }
@@ -1164,9 +1164,9 @@ function doEnhance(silent = false) {
     currentLevel++;
     session.success++;
     resultType = 'success';
-    msg = `✨ Sukses! +${lvl} → +${currentLevel}`;
+    msg = `✨ Success! +${lvl} → +${currentLevel}`;
     if (!silent) spawnParticles(true);
-    addLog(`[+${lvl}→+${currentLevel}] SUKSES`, 's');
+    addLog(`[+${lvl}→+${currentLevel}] SUCCESS`, 's');
   } else {
     // FAIL
     session.fail++;
@@ -1177,18 +1177,18 @@ function doEnhance(silent = false) {
         if (currentLevel > 0) currentLevel--;
         session.down++;
         resultType = 'down';
-        msg = `💔 Gagal & Turun! +${lvl} → +${currentLevel}`;
+        msg = `💔 Failed & Dropped! +${lvl} → +${currentLevel}`;
         if (!silent) spawnParticles(false);
-        addLog(`[+${lvl}→TURUN→+${currentLevel}] GAGAL+TURUN`, 'd');
+        addLog(`[+${lvl}→DROP→+${currentLevel}] FAIL+DROP`, 'd');
       } else {
         resultType = 'fail';
-        msg = `❌ Gagal! Level tetap +${lvl}`;
-        addLog(`[+${lvl}] GAGAL (level tetap)`, 'f');
+        msg = `❌ Failed! Level stays at +${lvl}`;
+        addLog(`[+${lvl}] FAILED (level unchanged)`, 'f');
       }
     } else {
       resultType = 'fail';
-      msg = `❌ Gagal! Level tetap +${lvl}`;
-      addLog(`[+${lvl}] GAGAL`, 'f');
+      msg = `❌ Failed! Level stays at +${lvl}`;
+      addLog(`[+${lvl}] FAILED`, 'f');
     }
   }
 
@@ -1219,7 +1219,7 @@ function toggleAuto() {
 function startAuto() {
   const target = parseInt(document.getElementById('autoTarget').value);
   if (currentLevel >= target) {
-    alert(`Level sudah +${currentLevel}, pilih target lebih tinggi.`);
+    alert(`Level is already +${currentLevel}, please choose a higher target.`);
     return;
   }
   autoRunning = true;
@@ -1267,11 +1267,11 @@ function stopAuto(reason = '') {
   const msgEl = document.getElementById('resultMsg');
   if (reason === 'nomats') {
     msgEl.className = 'result-msg fail';
-    msgEl.textContent = `⚠ Auto berhenti! Material/Gold habis di level +${currentLevel}`;
-    addLog(`AUTO BERHENTI — material habis di +${currentLevel}`, 'f');
+    msgEl.textContent = `⚠ Auto stopped! Materials/Gold ran out at level +${currentLevel}`;
+    addLog(`AUTO STOPPED — materials ran out at +${currentLevel}`, 'f');
   } else if (currentLevel >= target) {
     msgEl.className = 'result-msg success';
-    msgEl.textContent = `🎉 Auto selesai! Mencapai +${currentLevel}`;
+    msgEl.textContent = `🎉 Auto complete! Reached +${currentLevel}`;
   }
 }
 
@@ -1280,8 +1280,8 @@ function resetAll() {
   currentLevel = 0;
   session = { attempt: 0, success: 0, fail: 0, down: 0, gold: 0, frag: 0, root: 0 };
   document.getElementById('resultMsg').className = 'result-msg idle';
-  document.getElementById('resultMsg').textContent = '⚔ Siap untuk enhance...';
-  document.getElementById('logBox').innerHTML = '<div class="log-entry">— Reset. Simulator siap. —</div>';
+  document.getElementById('resultMsg').textContent = '⚔ Ready to enhance...';
+  document.getElementById('logBox').innerHTML = '<div class="log-entry">— Reset. Simulator ready. —</div>';
   updateUI();
 }
 
@@ -1290,7 +1290,7 @@ function addLog(text, type = '') {
   const box = document.getElementById('logBox');
   const el = document.createElement('div');
   el.className = 'log-entry ' + type;
-  const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   el.textContent = `[${time}] ${text}`;
   box.appendChild(el);
   box.scrollTop = box.scrollHeight;
@@ -1303,7 +1303,7 @@ function checkInv() {
   const lvl = currentLevel;
   if (lvl >= 50) {
     document.getElementById('invStatus').className = 'inv-status';
-    document.getElementById('invStatus').textContent = 'Level maksimum!';
+    document.getElementById('invStatus').textContent = 'Maximum level!';
     return;
   }
   const d = DATA[lvl];
@@ -1318,21 +1318,21 @@ function checkInv() {
   const el = document.getElementById('invStatus');
   if (gold === 0 && frag === 0 && root === 0) {
     el.className = 'inv-status low';
-    el.textContent = '⚠ Masukkan jumlah material terlebih dahulu untuk enhance';
+    el.textContent = '⚠ Please enter your material quantities first to enhance';
     refreshEnhanceBtn();
     return;
   }
 
   if (canG && canF && canR) {
     el.className = 'inv-status ok';
-    el.textContent = `✓ Material cukup untuk enhance ke +${lvl + 1}`;
+    el.textContent = `✓ Materials sufficient to enhance to +${lvl + 1}`;
   } else {
     const missing = [];
-    if (!canG) missing.push(`Gold: butuh ${fmt(d[2])}, punya ${fmt(gold)}`);
-    if (!canF) missing.push(`Fragment: butuh ${d[3]}, punya ${frag}`);
-    if (!canR) missing.push(`Root: butuh ${d[4]}, punya ${root}`);
+    if (!canG) missing.push(`Gold: need ${fmt(d[2])}, have ${fmt(gold)}`);
+    if (!canF) missing.push(`Fragment: need ${d[3]}, have ${frag}`);
+    if (!canR) missing.push(`Root: need ${d[4]}, have ${root}`);
     el.className = 'inv-status low';
-    el.textContent = `⚠ Kurang: ${missing.join(' · ')}`;
+    el.textContent = `⚠ Insufficient: ${missing.join(' · ')}`;
   }
   refreshEnhanceBtn();
 }
@@ -1388,7 +1388,7 @@ function switchTab(id) {
 
 // ── UTILS ──
 function fmt(n) {
-  return n.toLocaleString('id-ID');
+  return n.toLocaleString('en-US');
 }
 
 function fmtK(n) {
