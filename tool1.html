@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Dragon Enhancement Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#D4A017;--gold-light:#F0C040;--gold-dim:#8B6914;
+  --bg:#0D0B08;--bg-card:#161310;--bg-panel:#1C1812;
+  --border:rgba(212,160,23,0.18);--border-strong:rgba(212,160,23,0.4);
+  --text:#EDE0C4;--text-dim:#8B7D60;--text-muted:#5A5040;
+  --success:#4CAF73;--danger:#E24B4A;--warn:#EF9F27;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(212,160,23,0.04) 0%,transparent 60%),
+  radial-gradient(ellipse at 80% 20%,rgba(212,160,23,0.03) 0%,transparent 50%);}
+header{text-align:center;padding:2rem 1rem 1.25rem;border-bottom:0.5px solid var(--border);}
+header::after{content:'';display:block;width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto 0;}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:8px;}
+h1{font-family:'Cinzel',serif;font-size:clamp(20px,4vw,32px);font-weight:700;color:var(--gold-light);letter-spacing:.04em;text-shadow:0 0 40px rgba(212,160,23,0.3);}
+.sub{font-size:13px;color:var(--text-muted);margin-top:6px;}
+.main{max-width:960px;margin:0 auto;padding:1.5rem 1rem 3rem;}
+.card{background:var(--bg-card);border:0.5px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:14px;}
+.card-title{font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:12px;}
+
+.equip-row{display:flex;gap:8px;margin-bottom:18px;}
+.equip-btn{flex:1;padding:11px 14px;border:0.5px solid var(--border);border-radius:8px;background:transparent;color:var(--text-dim);font-size:15px;font-family:'Cinzel',serif;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.05em;}
+.equip-btn.active{background:rgba(212,160,23,0.15);border-color:var(--border-strong);color:var(--gold-light);box-shadow:0 0 14px rgba(212,160,23,0.12);}
+.equip-btn:hover:not(.active){background:rgba(212,160,23,0.06);border-color:rgba(212,160,23,0.28);}
+
+.input-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.input-group{display:flex;flex-direction:column;gap:5px;}
+.input-group label{font-size:11px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;}
+.lvl-select{background:var(--bg-panel);border:0.5px solid var(--border-strong);border-radius:8px;color:var(--gold-light);font-family:'Cinzel',serif;font-size:20px;font-weight:700;padding:10px 36px 10px 16px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B6914' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:90px;text-align:center;}
+.lvl-select:focus{outline:none;border-color:var(--gold-light);}
+.arrow-sep{font-size:22px;color:var(--gold-dim);padding-top:18px;}
+
+.opts-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.opt-toggle{display:flex;align-items:center;gap:8px;padding:8px 14px;border:0.5px solid var(--border);border-radius:7px;background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all .2s;user-select:none;}
+.opt-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex-shrink:0;transition:background .2s;}
+.opt-toggle.active{background:rgba(212,160,23,0.1);border-color:var(--border-strong);color:var(--gold-light);}
+.opt-toggle.active .opt-dot{background:var(--gold-light);}
+
+.btn-sim{padding:12px 28px;border:none;border-radius:8px;background:linear-gradient(135deg,#C8900F 0%,#E8B020 50%,#C8900F 100%);color:#1A1000;font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .2s;margin-top:18px;}
+.btn-sim:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-sim:active{transform:scale(.98);}
+
+.result-area{display:none;}
+.result-area.show{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+.sum-box{background:var(--bg-panel);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px;}
+.sum-lbl{font-size:10px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.sum-val{font-size:22px;font-weight:600;color:var(--gold-light);font-variant-numeric:tabular-nums;line-height:1.1;}
+.sum-note{font-size:11px;color:var(--text-dim);margin-top:3px;}
+
+.log-wrap{overflow-x:auto;max-height:520px;overflow-y:auto;}
+.log-table{width:100%;border-collapse:collapse;font-size:12px;min-width:620px;}
+.log-table thead tr{position:sticky;top:0;background:var(--bg-card);z-index:1;}
+.log-table th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);padding:0 8px 8px;text-align:left;border-bottom:0.5px solid var(--border);font-weight:500;white-space:nowrap;}
+.log-table td{padding:5px 8px;border-bottom:0.5px solid rgba(212,160,23,0.05);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.log-table tr:last-child td{border-bottom:none;}
+.ev-success td:first-child{color:var(--success);}
+.ev-fail td:first-child{color:var(--danger);}
+.ev-drop td:first-child{color:var(--warn);}
+.ev-destroy td:first-child{color:#FF6B35;}
+.ev-protect td:first-child{color:var(--gold-light);}
+
+.badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;vertical-align:middle;}
+.b-ok{background:rgba(76,175,115,0.15);color:var(--success);}
+.b-fail{background:rgba(226,75,74,0.1);color:var(--danger);}
+.b-drop{background:rgba(239,159,39,0.15);color:var(--warn);}
+.b-dest{background:rgba(255,107,53,0.12);color:#FF6B35;}
+.b-prot{background:rgba(212,160,23,0.12);color:var(--gold-light);}
+
+.mat-table{width:100%;border-collapse:collapse;font-size:13px;}
+.mat-table th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);padding:0 0 8px;text-align:left;border-bottom:0.5px solid var(--border);font-weight:500;}
+.mat-table th:not(:first-child){text-align:right;}
+.mat-table td{padding:7px 0;border-bottom:0.5px solid rgba(212,160,23,0.06);color:var(--text-dim);}
+.mat-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;}
+.mat-table tr:last-child td{border-bottom:none;}
+.qty-val{font-weight:600;color:var(--text);}
+.gold-val{font-weight:600;color:var(--gold-light);}
+
+.runs-note{font-size:11px;color:var(--text-muted);text-align:center;padding:6px 0 0;}
+.warn-box{background:rgba(226,75,74,0.08);border:0.5px solid rgba(226,75,74,0.2);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--danger);margin-bottom:10px;display:none;}
+
+.runs-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.runs-row label{font-size:12px;color:var(--text-dim);}
+.runs-input{background:var(--bg-panel);border:0.5px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;padding:6px 10px;width:80px;text-align:center;font-family:'Inter',sans-serif;}
+.runs-input:focus{outline:none;border-color:var(--border-strong);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Gold Dragon Equipment</div>
+  <h1>Enhancement Calculator</h1>
+  <div class="sub">Simulasi langkah nyata — setiap attempt dicatat termasuk turun &amp; hancur</div>
+</header>
+
+<div class="main">
+  <div class="card">
+    <div class="card-title">Tipe Equipment</div>
+    <div class="equip-row">
+      <button class="equip-btn active" id="btn-weapon" onclick="setEquipType('weapon')">&#9876; Weapon</button>
+      <button class="equip-btn" id="btn-armor" onclick="setEquipType('armor')">&#128737; Armor</button>
+    </div>
+
+    <div class="card-title">Konfigurasi</div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Dari</label>
+        <select class="lvl-select" id="from-sel"></select>
+      </div>
+      <div class="arrow-sep">&#8594;</div>
+      <div class="input-group">
+        <label>Target</label>
+        <select class="lvl-select" id="to-sel"></select>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="card-title" style="margin-bottom:8px;">Opsi</div>
+      <div class="opts-row">
+        <label class="opt-toggle active" id="opt-jelly-lbl">
+          <span class="opt-dot"></span>
+          &#128737; Pakai Jellies (cegah hancur)
+        </label>
+      </div>
+</div>
+
+    <div><button class="btn-sim" onclick="runSim()">&#9874; Simulasi Sekarang</button></div>
+  </div>
+
+  <div class="warn-box" id="warn-box"></div>
+  <div class="result-area" id="result-area">
+
+    <div class="card" id="summary-card">
+      <div class="card-title">Ringkasan <span id="run-tabs" style="margin-left:8px;"></span></div>
+      <div class="sum-grid" id="sum-grid"></div>
+      <table class="mat-table" id="mat-table"></table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Log Perjalanan <span id="log-run-label" style="font-size:11px;color:var(--text-muted);font-family:'Inter',serif;text-transform:none;letter-spacing:0;margin-left:6px;"></span></div>
+      <div class="log-wrap">
+        <table class="log-table" id="log-table">
+          <thead><tr>
+            <th>Hasil</th><th>Level</th><th>Roll</th><th>Material</th><th>Qty</th><th>Gold</th><th>Jelly</th><th>Level Setelah</th>
+          </tr></thead>
+          <tbody id="log-body"></tbody>
+        </table>
+      </div>
+      <div class="runs-note" id="runs-note"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA_WEAPON=[
+  {lvl:1, sr:100,dr:0,   jelly:0,      gold:10780,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:2, sr:100,dr:0,   jelly:0,      gold:14665,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:3, sr:100,dr:0,   jelly:0,      gold:19145,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:4, sr:20, dr:20,  jelly:7000,   gold:29064,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:5, sr:10, dr:80,  jelly:10000,  gold:41846,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:6, sr:9,  dr:80,  jelly:14000,  gold:57904,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:7, sr:8,  dr:80,  jelly:18000,  gold:68880,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:8, sr:6,  dr:80,  jelly:26000,  gold:90972,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:9, sr:5.5,dr:80,  jelly:33000,  gold:105462, m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:10,sr:5,  dr:100, jelly:42000,  gold:117813, m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:11,sr:5,  dr:100, jelly:50200,  gold:125000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:12,sr:5,  dr:100, jelly:60200,  gold:130000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:13,sr:5,  dr:100, jelly:71400,  gold:135000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:14,sr:5,  dr:100, jelly:84000,  gold:140000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:15,sr:5,  dr:100, jelly:90000,  gold:140000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:16,sr:5,  dr:100, jelly:92000,  gold:145000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:17,sr:5,  dr:100, jelly:94000,  gold:147000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:18,sr:5,  dr:100, jelly:96000,  gold:148000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:19,sr:5,  dr:100, jelly:98000,  gold:149000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:20,sr:5,  dr:100, jelly:100000, gold:150000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+];
+
+const DATA_ARMOR=[
+  {lvl:1, sr:100,dr:0,   jelly:0,      gold:15190,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:2, sr:100,dr:0,   jelly:0,      gold:20650,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:3, sr:100,dr:0,   jelly:0,      gold:27020,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:4, sr:20, dr:20,  jelly:4500,   gold:34160,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:5, sr:10, dr:80,  jelly:6000,   gold:42210,  m1:'Scale Powder', m1a:5,m2:'Plate Powder',   m2a:5},
+  {lvl:6, sr:9,  dr:80,  jelly:7500,   gold:51100,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:7, sr:8,  dr:80,  jelly:10000,  gold:55000,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:8, sr:6,  dr:80,  jelly:12000,  gold:65000,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:9, sr:6,  dr:80,  jelly:14000,  gold:75000,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:10,sr:5,  dr:100, jelly:16500,  gold:85000,  m1:'Plate Powder', m1a:5,m2:'Jewel Fragment', m2a:5},
+  {lvl:11,sr:5,  dr:100, jelly:18000,  gold:100000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:12,sr:5,  dr:100, jelly:20000,  gold:112000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:13,sr:5,  dr:100, jelly:21700,  gold:128000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:14,sr:5,  dr:100, jelly:24200,  gold:132000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:15,sr:5,  dr:100, jelly:25500,  gold:135000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:16,sr:5,  dr:100, jelly:26000,  gold:138000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:17,sr:5,  dr:100, jelly:26500,  gold:141000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:18,sr:5,  dr:100, jelly:27000,  gold:144000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:19,sr:5,  dr:100, jelly:27250,  gold:147000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+  {lvl:20,sr:5,  dr:100, jelly:27500,  gold:150000, m1:'Jewel Fragment',m1a:5,m2:'Scale Powder',  m2a:5},
+];
+
+let equipType='weapon';
+let DATA=DATA_WEAPON;
+
+function setEquipType(type){
+  equipType=type;
+  DATA=type==='weapon'?DATA_WEAPON:DATA_ARMOR;
+  document.getElementById('btn-weapon').classList.toggle('active',type==='weapon');
+  document.getElementById('btn-armor').classList.toggle('active',type==='armor');
+  document.getElementById('result-area').className='result-area';
+  document.getElementById('warn-box').style.display='none';
+}
+
+function canDrop(lvl){return lvl>=6&&(lvl%2===0);}
+function canDestroy(lvl){return lvl>=4&&DATA[lvl].dr>0;}
+
+const fromSel=document.getElementById('from-sel');
+const toSel=document.getElementById('to-sel');
+for(let i=0;i<=19;i++){const o=document.createElement('option');o.value=i;o.textContent='+'+i;fromSel.appendChild(o);}
+for(let i=1;i<=20;i++){const o=document.createElement('option');o.value=i;o.textContent='+'+i;toSel.appendChild(o);}
+fromSel.value=3;toSel.value=10;
+
+const optJelly=document.getElementById('opt-jelly-lbl');
+let useJelly=true;
+optJelly.addEventListener('click',()=>{useJelly=!useJelly;optJelly.classList.toggle('active',useJelly);});
+
+function fmt(n){return Math.round(n).toLocaleString('id-ID');}
+
+function simulate(from,to,jelly){
+  const log=[];
+  const mats={'Scale Powder':0,'Plate Powder':0,'Jewel Fragment':0};
+  let totalGold=0,totalJelly=0,attempts=0;
+  let lvl=from;
+  while(lvl<to){
+    const d=DATA[lvl];
+    attempts++;
+    mats[d.m1]+=d.m1a;
+    mats[d.m2]+=d.m2a;
+    totalGold+=d.gold;
+    const jellyActive=jelly&&canDestroy(lvl);
+    if(jellyActive)totalJelly+=d.jelly;
+    const roll=+(Math.random()*100).toFixed(2);
+    const hit=roll<d.sr;
+    let event,afterLvl;
+    if(hit){lvl++;event='success';afterLvl=lvl;}
+    else{
+      const dRoll=+(Math.random()*100).toFixed(2);
+      const wouldDestroy=canDestroy(lvl)&&dRoll<d.dr;
+      if(wouldDestroy&&!jellyActive){event='destroy';lvl=from;afterLvl=lvl;}
+      else if(wouldDestroy&&jellyActive){
+        if(canDrop(lvl)){lvl=Math.max(from,lvl-1);event='protect-drop';}
+        else{event='protect';}
+        afterLvl=lvl;
+      }else{
+        if(canDrop(lvl)){lvl=Math.max(from,lvl-1);event='drop';}
+        else{event='fail';}
+        afterLvl=lvl;
+      }
+    }
+    log.push({event,afterLvl,roll,d,jellyActive});
+  }
+  return{log,mats,totalGold,totalJelly,attempts};
+}
+
+let allRuns=[],currentRun=0;
+
+function runSim(){
+  const from=parseInt(fromSel.value);
+  const to=parseInt(toSel.value);
+  const warnEl=document.getElementById('warn-box');
+  if(to<=from){warnEl.style.display='block';warnEl.textContent='Peringatan: Target harus lebih tinggi dari level awal.';document.getElementById('result-area').className='result-area';return;}
+  warnEl.style.display='none';
+  const runs=1;
+  allRuns=[];
+  for(let r=0;r<runs;r++)allRuns.push(simulate(from,to,useJelly));
+  currentRun=0;
+  renderSummary(from,to);
+  renderLog(0);
+  document.getElementById('result-area').className='result-area show';
+  document.getElementById('result-area').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderSummary(from,to){
+  const runs=allRuns.length;
+  const allAttempts=allRuns.map(r=>r.attempts);
+  const allGold=allRuns.map(r=>r.totalGold);
+  const allJelly=allRuns.map(r=>r.totalJelly);
+  const minA=Math.min(...allAttempts),maxA=Math.max(...allAttempts),avgA=allAttempts.reduce((a,b)=>a+b,0)/runs;
+  const minG=Math.min(...allGold),maxG=Math.max(...allGold),avgG=allGold.reduce((a,b)=>a+b,0)/runs;
+  const minJ=Math.min(...allJelly),maxJ=Math.max(...allJelly),avgJ=allJelly.reduce((a,b)=>a+b,0)/runs;
+  const equipLabel=equipType==='weapon'?'Weapon':'Armor';
+  document.getElementById('sum-grid').innerHTML=`
+    <div class="sum-box"><div class="sum-lbl">Route</div>
+      <div class="sum-val" style="font-family:'Cinzel',serif;font-size:20px;">+${from}&#8594;+${to}</div>
+      <div class="sum-note">${runs} simulasi &middot; ${equipLabel}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Total Attempt</div>
+      <div class="sum-val">${runs===1?fmt(allAttempts[0]):fmt(avgA)}</div>
+      <div class="sum-note">${runs>1?'min '+fmt(minA)+' / max '+fmt(maxA):'percobaan nyata'}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Total Gold</div>
+      <div class="sum-val" style="font-size:17px;">${runs===1?fmt(allGold[0]):fmt(avgG)}</div>
+      <div class="sum-note">${runs>1?'min '+fmt(minG)+' / max '+fmt(maxG):'gold terpakai'}</div></div>
+    ${useJelly?`<div class="sum-box"><div class="sum-lbl">Total Jelly</div>
+      <div class="sum-val" style="font-size:17px;">${runs===1?fmt(allJelly[0]):fmt(avgJ)}</div>
+      <div class="sum-note">${runs>1?'min '+fmt(minJ)+' / max '+fmt(maxJ):'jelly terpakai'}</div></div>`:''}
+  `;
+  const matNames=['Scale Powder','Plate Powder','Jewel Fragment'];
+  const matAvg={};
+  for(const m of matNames)matAvg[m]=allRuns.reduce((s,r)=>s+(r.mats[m]||0),0)/runs;
+  const matMin={},matMax={};
+  if(runs>1)for(const m of matNames){matMin[m]=Math.min(...allRuns.map(r=>r.mats[m]||0));matMax[m]=Math.max(...allRuns.map(r=>r.mats[m]||0));}
+  let matRows='';
+  for(const m of matNames){
+    if(matAvg[m]<0.5)continue;
+    const note=runs>1?'<span style="font-size:11px;color:var(--text-muted)">min '+fmt(matMin[m])+' / max '+fmt(matMax[m])+'</span>':'';
+    matRows+=`<tr><td>${m}</td><td class="qty-val">${fmt(matAvg[m])} pcs</td><td>${note}</td></tr>`;
+  }
+  document.getElementById('mat-table').innerHTML=`<thead><tr><th>Material</th><th style="text-align:right">${runs===1?'Qty Terpakai':'Rata-rata Qty'}</th><th style="text-align:right">${runs>1?'Rentang':''}</th></tr></thead><tbody>${matRows}</tbody>`;
+  if(runs>1){
+    let tabs='';
+    for(let i=0;i<runs;i++)tabs+=`<button onclick="switchRun(${i})" id="tab-${i}" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border);border-radius:5px;background:${i===0?'rgba(212,160,23,0.15)':'transparent'};color:${i===0?'var(--gold-light)':'var(--text-muted)'};cursor:pointer;margin-right:4px;font-family:'Inter',sans-serif;">Run ${i+1}</button>`;
+    document.getElementById('run-tabs').innerHTML=tabs;
+  }else{document.getElementById('run-tabs').innerHTML='';}
+}
+
+function switchRun(idx){
+  currentRun=idx;renderLog(idx);
+  for(let i=0;i<allRuns.length;i++){const t=document.getElementById('tab-'+i);if(!t)continue;t.style.background=i===idx?'rgba(212,160,23,0.15)':'transparent';t.style.color=i===idx?'var(--gold-light)':'var(--text-muted)';}
+}
+
+function renderLog(idx){
+  const run=allRuns[idx];const log=run.log;
+  document.getElementById('log-run-label').textContent=allRuns.length>1?'(Run '+(idx+1)+' \u2014 '+fmt(run.attempts)+' attempt, '+fmt(run.totalGold)+' gold)':'('+fmt(run.attempts)+' attempt total)';
+  const evLabel={'success':'\u2713 SUKSES','fail':'\u2717 Gagal','drop':'\u2193 Turun','destroy':'\u2620 Hancur','protect':'\uD83D\uDEE1 Dilindungi','protect-drop':'\uD83D\uDEE1\u2193 Lindungi+Turun'};
+  const evClass={'success':'ev-success','fail':'ev-fail','drop':'ev-drop','destroy':'ev-destroy','protect':'ev-protect','protect-drop':'ev-protect'};
+  const evBadge={'success':'b-ok','fail':'b-fail','drop':'b-drop','destroy':'b-dest','protect':'b-prot','protect-drop':'b-prot'};
+  const from=parseInt(fromSel.value);
+  let rows='',lvlTrack=from;
+  for(const e of log){
+    const d=e.d;const fromLvl=lvlTrack;const toLvl=e.afterLvl;
+    const levelStr='+'+fromLvl+'\u2192+'+(fromLvl+1);
+    lvlTrack=toLvl;
+    rows+=`<tr class="${evClass[e.event]}"><td><span class="badge ${evBadge[e.event]}">${evLabel[e.event]}</span></td><td style="color:var(--text-dim)">${levelStr}</td><td style="color:var(--text-muted)">${e.roll}%</td><td style="color:var(--text-dim);font-size:11px;">${d.m1}<br>${d.m2}</td><td style="color:var(--text-dim)">${d.m1a}<br>${d.m2a}</td><td style="color:var(--gold-dim)">${fmt(d.gold)}</td><td style="color:var(--text-muted)">${e.jellyActive?fmt(d.jelly):'&#8212;'}</td><td style="font-weight:600;color:var(--gold-light)">+${toLvl}</td></tr>`;
+  }
+  document.getElementById('log-body').innerHTML=rows;
+  document.getElementById('runs-note').textContent=fmt(run.attempts)+' attempt dicatat \u00B7 Run '+(idx+1)+' dari '+allRuns.length;
+}
+</script>
+</body>
+</html>

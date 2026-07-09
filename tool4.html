@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geraint's Growth Gacha Simulator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-deep: #0a0a14;
+    --bg-panel: #14131f;
+    --bg-card: #1b1a2b;
+    --border-glow: #4a3f7a;
+    --gold: #f0c75e;
+    --gold-dim: #a8863a;
+    --purple: #8b7fd6;
+    --purple-dim: #5d52a3;
+    --text-main: #ece9f7;
+    --text-dim: #9b97b5;
+    --target-glow: #f0c75e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: radial-gradient(ellipse at top, #1a1730 0%, var(--bg-deep) 60%);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 18px rgba(240, 199, 94, 0.35);
+  }
+
+  .header .sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glow);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 0 40px rgba(74, 63, 122, 0.15), inset 0 0 60px rgba(139, 127, 214, 0.03);
+  }
+
+  .section-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .target-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .target-card {
+    background: var(--bg-card);
+    border: 1px solid #2c2a45;
+    border-radius: 10px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .target-card:hover {
+    border-color: var(--purple-dim);
+    transform: translateY(-2px);
+  }
+
+  .target-card.selected {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(240,199,94,0.12), rgba(240,199,94,0.02));
+    box-shadow: 0 0 16px rgba(240, 199, 94, 0.25);
+  }
+
+  .target-card .icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+    filter: grayscale(0.3);
+  }
+
+  .target-card .tname {
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-main);
+  }
+
+  .target-card .tpct {
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'Inter', monospace;
+  }
+
+  .target-card.selected .tpct {
+    color: var(--gold-dim);
+  }
+
+  .go-btn {
+    width: 100%;
+    padding: 15px;
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #14131f;
+    background: linear-gradient(180deg, #f7d97f, var(--gold));
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 0 var(--gold-dim), 0 0 20px rgba(240, 199, 94, 0.2);
+  }
+
+  .go-btn:hover { filter: brightness(1.08); }
+  .go-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--gold-dim); }
+
+  .go-btn:disabled {
+    background: #4a4660;
+    color: var(--text-dim);
+    box-shadow: 0 4px 0 #36334a;
+    cursor: not-allowed;
+  }
+
+  .box-anim {
+    display: none;
+    text-align: center;
+    padding: 30px 0 10px;
+  }
+
+  .box-anim.active { display: block; }
+
+  .box-icon {
+    font-size: 48px;
+    display: inline-block;
+    animation: shake 0.4s infinite;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+  }
+
+  .box-anim .counter {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: monospace;
+  }
+
+  .result-view { display: none; }
+  .result-view.active { display: block; }
+
+  .result-hero {
+    text-align: center;
+    background: linear-gradient(180deg, rgba(240,199,94,0.1), transparent);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 22px 16px;
+    margin-bottom: 18px;
+  }
+
+  .result-hero .rlabel {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .result-hero .ricon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+
+  .result-hero .rname {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .result-hero .rchance {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid #2c2a45;
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .stat-card .slabel {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .stat-card .sval {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: monospace;
+  }
+
+  .log-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .log-list {
+    border: 1px solid #2c2a45;
+    border-radius: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-bottom: 18px;
+    background: var(--bg-card);
+  }
+
+  .log-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid #242238;
+  }
+
+  .log-row:last-child { border-bottom: none; }
+
+  .log-row .lname { color: var(--text-dim); }
+  .log-row .lcount { font-weight: 600; color: var(--text-main); font-family: monospace; }
+
+  .log-empty {
+    padding: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .reset-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--purple);
+    background: transparent;
+    border: 1px solid var(--purple-dim);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .reset-btn:hover {
+    background: rgba(139, 127, 214, 0.08);
+    border-color: var(--purple);
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: #5e5a78;
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="eyebrow">Simulator probabilitas</div>
+    <h1>Geraint's Growth Gacha</h1>
+    <div class="sub">Buka box terus sampai dapat item target</div>
+  </div>
+
+  <div class="panel">
+
+    <div id="setup-view">
+      <div class="section-label">Pilih target</div>
+      <div class="target-grid" id="target-grid"></div>
+      <div id="exchange-note" style="display:none; font-size:12px; color: var(--text-dim); background: var(--bg-card); border: 1px solid #2c2a45; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; line-height: 1.5;">
+        <span style="color: var(--gold-dim);">&#129689;</span> Simulasi juga berhenti otomatis kalau Coordination Coin sudah terkumpul 1.000, karena bisa ditukar jadi Blessed Geraint's Grow.
+      </div>
+      <button class="go-btn" id="go-btn">Go gacha</button>
+    </div>
+
+    <div class="box-anim" id="box-anim">
+      <div class="box-icon">&#127873;</div>
+      <div class="counter" id="box-counter">Membuka box ke-0...</div>
+    </div>
+
+    <div class="result-view" id="result-view">
+      <div class="result-hero">
+        <div class="rlabel">Berhasil mendapat</div>
+        <div class="ricon" id="result-icon">&#10024;</div>
+        <div class="rname" id="result-item">-</div>
+        <div class="rchance" id="result-chance">-</div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns: 1fr;">
+        <div class="stat-card">
+          <div class="slabel">Total box dibuka</div>
+          <div class="sval" id="result-count">0</div>
+        </div>
+      </div>
+
+      <div class="log-label">Drop lain selama proses</div>
+      <div class="log-list" id="log-list"></div>
+
+      <button class="reset-btn" id="reset-btn">Coba lagi</button>
+    </div>
+
+  </div>
+
+  <div class="footer-note">Berdasarkan rate asli Geraint's Growth Challenge Box.<br>Hasil acak murni — bisa beruntung, bisa apes, sama seperti gacha aslinya.</div>
+</div>
+
+<script>
+(function(){
+  const ITEMS = [
+    {name: "Blessed Geraint's Grow", pct: 0.002, key: "blessed", tier: "target", icon: "&#127775;"},
+    {name: "High Grade Geraint's Grow", pct: 0.007, key: "high", tier: "target", icon: "&#127776;"},
+    {name: "Mid Grade Geraint's Grow", pct: 0.010, key: "mid", tier: "target", icon: "&#11088;"},
+    {name: "Low Grade Geraint's Grow", pct: 0.03, key: "low", tier: "other", icon: "&#127773;"},
+    {name: "Dragon Scale Refining Plate", pct: 18.45, key: "plate", tier: "other", icon: "&#129498;"},
+    {name: "Dim Hopes (5)", pct: 15.0, key: "dimhopes", tier: "other", icon: "&#128367;"},
+    {name: "Crystal Fortune Cookie (2)", pct: 20.5, key: "cfc2", tier: "other", icon: "&#129512;"},
+    {name: "Crystal Fortune Cookie (5)", pct: 7.5, key: "cfc5", tier: "other", icon: "&#129512;"},
+    {name: "Crystal Fortune Cookie (25)", pct: 3.0, key: "cfc25", tier: "other", icon: "&#129512;"},
+    {name: "Lebrium Point (10000) Ticket", pct: 20.5, key: "lp1", tier: "other", icon: "&#127915;"},
+    {name: "Lebrium Point (10000) Ticket (2)", pct: 7.5, key: "lp2", tier: "other", icon: "&#127915;"},
+    {name: "Lebrium Point (10000) Ticket (10)", pct: 3.0, key: "lp10", tier: "other", icon: "&#127915;"},
+    {name: "Coordination Coin", pct: 4.5, key: "coin", tier: "other", icon: "&#129689;"}
+  ];
+
+  const TARGETS = ITEMS.filter(i => i.tier === "target");
+  let selectedTarget = TARGETS[1]; // default: High Grade
+
+  const setupView = document.getElementById('setup-view');
+  const boxAnim = document.getElementById('box-anim');
+  const resultView = document.getElementById('result-view');
+  const targetGrid = document.getElementById('target-grid');
+  const goBtn = document.getElementById('go-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const boxCounter = document.getElementById('box-counter');
+
+  function shortName(name){
+    return name.replace("Geraint's Grow", "Geraint's Grow").trim();
+  }
+
+  function renderTargets(){
+    targetGrid.innerHTML = '';
+    TARGETS.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'target-card' + (t.key === selectedTarget.key ? ' selected' : '');
+      card.innerHTML =
+        '<div class="icon">' + t.icon + '</div>' +
+        '<div class="tname">' + shortName(t.name) + '</div>' +
+        '<div class="tpct">' + t.pct + '%</div>';
+      card.addEventListener('click', () => { selectedTarget = t; renderTargets(); updateExchangeNote(); });
+      targetGrid.appendChild(card);
+    });
+  }
+
+  function updateExchangeNote(){
+    const note = document.getElementById('exchange-note');
+    note.style.display = selectedTarget.key === 'blessed' ? 'block' : 'none';
+  }
+  renderTargets();
+  updateExchangeNote();
+
+  function pickItem(){
+    const r = Math.random() * 100;
+    let acc = 0;
+    for (const item of ITEMS){
+      acc += item.pct;
+      if (r <= acc) return item;
+    }
+    return ITEMS[ITEMS.length - 1];
+  }
+
+  const COIN_EXCHANGE_THRESHOLD = 1000;
+  const COIN_KEY = "coin";
+
+  function runGacha(target){
+    let count = 0;
+    const log = {};
+    let drawn;
+    let coinCount = 0;
+    let wonByExchange = false;
+    const maxIter = 10000000;
+    const exchangeApplies = target.key === "blessed";
+
+    while (count < maxIter){
+      count++;
+      drawn = pickItem();
+
+      if (drawn.key === target.key){
+        log[drawn.name] = (log[drawn.name] || 0); // ensure not double counted, just stop
+        break;
+      }
+
+      log[drawn.name] = (log[drawn.name] || 0) + 1;
+
+      if (drawn.key === COIN_KEY) coinCount++;
+
+      if (exchangeApplies && coinCount >= COIN_EXCHANGE_THRESHOLD){
+        wonByExchange = true;
+        break;
+      }
+    }
+    return {count, log, target, coinCount, wonByExchange};
+  }
+
+  function renderResult(res){
+    const heroLabel = document.querySelector('.result-hero .rlabel');
+    if (res.wonByExchange){
+      heroLabel.textContent = 'Berhenti karena tukar koin';
+      document.getElementById('result-icon').innerHTML = '&#129689;';
+      document.getElementById('result-item').textContent = '1.000 Coordination Coin';
+      document.getElementById('result-chance').textContent = 'Bisa ditukar jadi Blessed Geraint\'s Grow';
+    } else {
+      heroLabel.textContent = 'Berhasil mendapat';
+      document.getElementById('result-icon').innerHTML = res.target.icon;
+      document.getElementById('result-item').textContent = res.target.name;
+      document.getElementById('result-chance').textContent = 'Peluang per box: ' + res.target.pct + '%';
+    }
+
+    document.getElementById('result-count').textContent = res.count.toLocaleString('id-ID');
+
+    const logList = document.getElementById('log-list');
+    logList.innerHTML = '';
+    const entries = Object.entries(res.log).filter(([name, n]) => n > 0).sort((a,b) => b[1]-a[1]);
+    if (entries.length === 0){
+      const row = document.createElement('div');
+      row.className = 'log-empty';
+      row.textContent = 'Langsung dapat di box pertama, sangat beruntung!';
+      logList.appendChild(row);
+    } else {
+      entries.forEach(([name, n]) => {
+        const row = document.createElement('div');
+        row.className = 'log-row';
+        const isCoinAtCap = res.wonByExchange && name === "Coordination Coin";
+        row.innerHTML = '<span class="lname">' + name + (isCoinAtCap ? ' (capai target tukar)' : '') + '</span><span class="lcount">' + n.toLocaleString('id-ID') + 'x</span>';
+        logList.appendChild(row);
+      });
+    }
+
+    setupView.style.display = 'none';
+    boxAnim.classList.remove('active');
+    resultView.classList.add('active');
+  }
+
+  goBtn.addEventListener('click', () => {
+    setupView.style.display = 'none';
+    boxAnim.classList.add('active');
+
+    let tick = 0;
+    const target = selectedTarget;
+    const interval = setInterval(() => {
+      tick++;
+      boxCounter.textContent = 'Membuka box ke-' + tick.toLocaleString('id-ID') + '...';
+    }, 40);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      const res = runGacha(target);
+      renderResult(res);
+    }, 650);
+  });
+
+  resetBtn.addEventListener('click', () => {
+    resultView.classList.remove('active');
+    setupView.style.display = 'block';
+  });
+})();
+</script>
+
+</body>
+</html>
