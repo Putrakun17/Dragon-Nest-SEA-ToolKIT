@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -100,21 +100,21 @@ h1{font-family:'Cinzel',serif;font-size:clamp(20px,4vw,32px);font-weight:700;col
 <header>
   <div class="eyebrow">Gold Dragon Equipment</div>
   <h1>Enhancement Calculator</h1>
-  <div class="sub">Simulasi langkah nyata — setiap attempt dicatat termasuk turun &amp; hancur</div>
+  <div class="sub">Step-by-step simulation &mdash; every attempt is logged including drops &amp; destruction</div>
 </header>
 
 <div class="main">
   <div class="card">
-    <div class="card-title">Tipe Equipment</div>
+    <div class="card-title">Equipment Type</div>
     <div class="equip-row">
       <button class="equip-btn active" id="btn-weapon" onclick="setEquipType('weapon')">&#9876; Weapon</button>
       <button class="equip-btn" id="btn-armor" onclick="setEquipType('armor')">&#128737; Armor</button>
     </div>
 
-    <div class="card-title">Konfigurasi</div>
+    <div class="card-title">Configuration</div>
     <div class="input-row">
       <div class="input-group">
-        <label>Dari</label>
+        <label>From</label>
         <select class="lvl-select" id="from-sel"></select>
       </div>
       <div class="arrow-sep">&#8594;</div>
@@ -125,33 +125,33 @@ h1{font-family:'Cinzel',serif;font-size:clamp(20px,4vw,32px);font-weight:700;col
     </div>
 
     <div style="margin-top:14px;">
-      <div class="card-title" style="margin-bottom:8px;">Opsi</div>
+      <div class="card-title" style="margin-bottom:8px;">Options</div>
       <div class="opts-row">
         <label class="opt-toggle active" id="opt-jelly-lbl">
           <span class="opt-dot"></span>
-          &#128737; Pakai Jellies (cegah hancur)
+          &#128737; Use Jellies (prevent destruction)
         </label>
       </div>
-</div>
+    </div>
 
-    <div><button class="btn-sim" onclick="runSim()">&#9874; Simulasi Sekarang</button></div>
+    <div><button class="btn-sim" onclick="runSim()">&#9874; Simulate Now</button></div>
   </div>
 
   <div class="warn-box" id="warn-box"></div>
   <div class="result-area" id="result-area">
 
     <div class="card" id="summary-card">
-      <div class="card-title">Ringkasan <span id="run-tabs" style="margin-left:8px;"></span></div>
+      <div class="card-title">Summary <span id="run-tabs" style="margin-left:8px;"></span></div>
       <div class="sum-grid" id="sum-grid"></div>
       <table class="mat-table" id="mat-table"></table>
     </div>
 
     <div class="card">
-      <div class="card-title">Log Perjalanan <span id="log-run-label" style="font-size:11px;color:var(--text-muted);font-family:'Inter',serif;text-transform:none;letter-spacing:0;margin-left:6px;"></span></div>
+      <div class="card-title">Attempt Log <span id="log-run-label" style="font-size:11px;color:var(--text-muted);font-family:'Inter',serif;text-transform:none;letter-spacing:0;margin-left:6px;"></span></div>
       <div class="log-wrap">
         <table class="log-table" id="log-table">
           <thead><tr>
-            <th>Hasil</th><th>Level</th><th>Roll</th><th>Material</th><th>Qty</th><th>Gold</th><th>Jelly</th><th>Level Setelah</th>
+            <th>Result</th><th>Level</th><th>Roll</th><th>Material</th><th>Qty</th><th>Gold</th><th>Jelly</th><th>Level After</th>
           </tr></thead>
           <tbody id="log-body"></tbody>
         </table>
@@ -234,7 +234,7 @@ const optJelly=document.getElementById('opt-jelly-lbl');
 let useJelly=true;
 optJelly.addEventListener('click',()=>{useJelly=!useJelly;optJelly.classList.toggle('active',useJelly);});
 
-function fmt(n){return Math.round(n).toLocaleString('id-ID');}
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
 
 function simulate(from,to,jelly){
   const log=[];
@@ -278,7 +278,7 @@ function runSim(){
   const from=parseInt(fromSel.value);
   const to=parseInt(toSel.value);
   const warnEl=document.getElementById('warn-box');
-  if(to<=from){warnEl.style.display='block';warnEl.textContent='Peringatan: Target harus lebih tinggi dari level awal.';document.getElementById('result-area').className='result-area';return;}
+  if(to<=from){warnEl.style.display='block';warnEl.textContent='Warning: Target level must be higher than starting level.';document.getElementById('result-area').className='result-area';return;}
   warnEl.style.display='none';
   const runs=1;
   allRuns=[];
@@ -302,16 +302,16 @@ function renderSummary(from,to){
   document.getElementById('sum-grid').innerHTML=`
     <div class="sum-box"><div class="sum-lbl">Route</div>
       <div class="sum-val" style="font-family:'Cinzel',serif;font-size:20px;">+${from}&#8594;+${to}</div>
-      <div class="sum-note">${runs} simulasi &middot; ${equipLabel}</div></div>
-    <div class="sum-box"><div class="sum-lbl">Total Attempt</div>
+      <div class="sum-note">${runs} simulation &middot; ${equipLabel}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Total Attempts</div>
       <div class="sum-val">${runs===1?fmt(allAttempts[0]):fmt(avgA)}</div>
-      <div class="sum-note">${runs>1?'min '+fmt(minA)+' / max '+fmt(maxA):'percobaan nyata'}</div></div>
+      <div class="sum-note">${runs>1?'min '+fmt(minA)+' / max '+fmt(maxA):'actual attempts'}</div></div>
     <div class="sum-box"><div class="sum-lbl">Total Gold</div>
       <div class="sum-val" style="font-size:17px;">${runs===1?fmt(allGold[0]):fmt(avgG)}</div>
-      <div class="sum-note">${runs>1?'min '+fmt(minG)+' / max '+fmt(maxG):'gold terpakai'}</div></div>
+      <div class="sum-note">${runs>1?'min '+fmt(minG)+' / max '+fmt(maxG):'gold spent'}</div></div>
     ${useJelly?`<div class="sum-box"><div class="sum-lbl">Total Jelly</div>
       <div class="sum-val" style="font-size:17px;">${runs===1?fmt(allJelly[0]):fmt(avgJ)}</div>
-      <div class="sum-note">${runs>1?'min '+fmt(minJ)+' / max '+fmt(maxJ):'jelly terpakai'}</div></div>`:''}
+      <div class="sum-note">${runs>1?'min '+fmt(minJ)+' / max '+fmt(maxJ):'jelly spent'}</div></div>`:''}
   `;
   const matNames=['Scale Powder','Plate Powder','Jewel Fragment'];
   const matAvg={};
@@ -324,7 +324,7 @@ function renderSummary(from,to){
     const note=runs>1?'<span style="font-size:11px;color:var(--text-muted)">min '+fmt(matMin[m])+' / max '+fmt(matMax[m])+'</span>':'';
     matRows+=`<tr><td>${m}</td><td class="qty-val">${fmt(matAvg[m])} pcs</td><td>${note}</td></tr>`;
   }
-  document.getElementById('mat-table').innerHTML=`<thead><tr><th>Material</th><th style="text-align:right">${runs===1?'Qty Terpakai':'Rata-rata Qty'}</th><th style="text-align:right">${runs>1?'Rentang':''}</th></tr></thead><tbody>${matRows}</tbody>`;
+  document.getElementById('mat-table').innerHTML=`<thead><tr><th>Material</th><th style="text-align:right">${runs===1?'Qty Used':'Avg Qty'}</th><th style="text-align:right">${runs>1?'Range':''}</th></tr></thead><tbody>${matRows}</tbody>`;
   if(runs>1){
     let tabs='';
     for(let i=0;i<runs;i++)tabs+=`<button onclick="switchRun(${i})" id="tab-${i}" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border);border-radius:5px;background:${i===0?'rgba(212,160,23,0.15)':'transparent'};color:${i===0?'var(--gold-light)':'var(--text-muted)'};cursor:pointer;margin-right:4px;font-family:'Inter',sans-serif;">Run ${i+1}</button>`;
@@ -339,8 +339,8 @@ function switchRun(idx){
 
 function renderLog(idx){
   const run=allRuns[idx];const log=run.log;
-  document.getElementById('log-run-label').textContent=allRuns.length>1?'(Run '+(idx+1)+' \u2014 '+fmt(run.attempts)+' attempt, '+fmt(run.totalGold)+' gold)':'('+fmt(run.attempts)+' attempt total)';
-  const evLabel={'success':'\u2713 SUKSES','fail':'\u2717 Gagal','drop':'\u2193 Turun','destroy':'\u2620 Hancur','protect':'\uD83D\uDEE1 Dilindungi','protect-drop':'\uD83D\uDEE1\u2193 Lindungi+Turun'};
+  document.getElementById('log-run-label').textContent=allRuns.length>1?'(Run '+(idx+1)+' \u2014 '+fmt(run.attempts)+' attempts, '+fmt(run.totalGold)+' gold)':'('+fmt(run.attempts)+' total attempts)';
+  const evLabel={'success':'\u2713 SUCCESS','fail':'\u2717 Failed','drop':'\u2193 Drop','destroy':'\u2620 Destroyed','protect':'\uD83D\uDEE1 Protected','protect-drop':'\uD83D\uDEE1\u2193 Protected+Drop'};
   const evClass={'success':'ev-success','fail':'ev-fail','drop':'ev-drop','destroy':'ev-destroy','protect':'ev-protect','protect-drop':'ev-protect'};
   const evBadge={'success':'b-ok','fail':'b-fail','drop':'b-drop','destroy':'b-dest','protect':'b-prot','protect-drop':'b-prot'};
   const from=parseInt(fromSel.value);
@@ -352,7 +352,7 @@ function renderLog(idx){
     rows+=`<tr class="${evClass[e.event]}"><td><span class="badge ${evBadge[e.event]}">${evLabel[e.event]}</span></td><td style="color:var(--text-dim)">${levelStr}</td><td style="color:var(--text-muted)">${e.roll}%</td><td style="color:var(--text-dim);font-size:11px;">${d.m1}<br>${d.m2}</td><td style="color:var(--text-dim)">${d.m1a}<br>${d.m2a}</td><td style="color:var(--gold-dim)">${fmt(d.gold)}</td><td style="color:var(--text-muted)">${e.jellyActive?fmt(d.jelly):'&#8212;'}</td><td style="font-weight:600;color:var(--gold-light)">+${toLvl}</td></tr>`;
   }
   document.getElementById('log-body').innerHTML=rows;
-  document.getElementById('runs-note').textContent=fmt(run.attempts)+' attempt dicatat \u00B7 Run '+(idx+1)+' dari '+allRuns.length;
+  document.getElementById('runs-note').textContent=fmt(run.attempts)+' attempts logged \u00B7 Run '+(idx+1)+' of '+allRuns.length;
 }
 </script>
 </body>
