@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -327,7 +327,7 @@ body {
           <input type="number" id="statPool" value="8" min="2" max="20">
         </div>
         <div class="field">
-          <label>Jumlah Jewel</label>
+          <label>Jewel Amount</label>
           <input type="number" id="timesandInput" value="100" min="1" max="100000">
         </div>
       </div>
@@ -383,7 +383,7 @@ body {
       <!-- HISTORY -->
       <div class="history-section" id="historySection">
         <div class="history-head">
-          <span class="history-head-title">📜 Riwayat Roll</span>
+          <span class="history-head-title">📜 Roll History</span>
           <div class="history-stats">
             <span>Roll: <strong id="hRollCount">0</strong></span>
             <span class="hs-win">Win: <strong id="hWinCount">0</strong></span>
@@ -394,7 +394,7 @@ body {
       </div>
 
       <div class="dist-section" id="distSection">
-        <div class="dist-head">📈 Distribusi</div>
+        <div class="dist-head">📈 Distribution</div>
         <div class="dist-body" id="distChart"></div>
       </div>
 
@@ -441,7 +441,7 @@ const LAST_SLOT_INDEX = 3; // slot ke-4 (0-indexed) — slot terakhir yang memak
 const FLAT_NUMBER_STATS = ['crt', 'crt_dmg', 'physdef', 'maxhp', 'finaldmg'];
 function isFlatStat(statKey) { return FLAT_NUMBER_STATS.includes(statKey); }
 function formatStatValue(statKey, val) {
-  return isFlatStat(statKey) ? val.toLocaleString('id-ID') : (val + '%');
+  return isFlatStat(statKey) ? val.toLocaleString('en-US') : (val + '%');
 }
 const WEAPON_STATS = [
   {value:'ancient',   label:'Ancient Dragon Jade Skill'},
@@ -575,7 +575,7 @@ function renderSlots(containerId, slots, target, animate) {
       const canLock = !isLocked && lockedCount < MAX_LOCKS;
       const lockIcon = isLocked ? '🔒' : '🔓';
       const lockCls = isLocked ? 'lock-btn locked' : 'lock-btn';
-      const lockTitle = isLocked ? 'Klik untuk buka lock (tidak mengembalikan Pakiha)' : (canLock ? 'Lock slot ini (50 Pakiha)' : 'Maks 2 slot terkunci');
+      const lockTitle = isLocked ? 'Click to unlock (Pakiha will not be refunded)' : (canLock ? 'Lock this slot (50 Pakiha)' : 'Max 2 slots locked');
       const disabledAttr = (!isLocked && !canLock) ? 'disabled' : '';
       return `<div class="stat-slot-wrap">
         <div class="${cls}" style="${style}">${content}</div>
@@ -612,7 +612,7 @@ function updatePakihaInfo() {
   if (lockCount === 0 && pakihaLog.length === 0) { info.className = 'pakiha-info'; return; }
   info.className = 'pakiha-info show';
   document.getElementById('pakihaTotal').textContent = totalPakiha.toLocaleString();
-  // Tampilkan ringkasan per-slot yang aktif terkunci + total pemakaian
+  // Show summary per active locked slot + total usage
   const activeLockEntries = Object.entries(lockedSlots).map(([idx, slot]) => {
     const slotRolls = pakihaLog.filter(e => e.slotIndex == idx);
     const slotTotal = slotRolls.reduce((s,e) => s + e.pakihaUsed, 0);
@@ -641,7 +641,7 @@ function updatePakihaInfo() {
   }).join('');
   document.getElementById('pakihaBody').innerHTML = activeLockEntries + pastEntries;
   document.getElementById('pakihaSummary').textContent =
-    `${pakihaLog.length} roll dengan lock · ${totalPakiha} Pakiha terpakai · ${lockCount} slot sedang terkunci`;
+    `${pakihaLog.length} roll dengan lock · ${totalPakiha} Pakiha spent · ${lockCount} slot(s) currently locked`;
 }
 
 function updateCounterUI() {
@@ -770,13 +770,13 @@ function doRoll() {
     if (session.prevSlots) {
       renderSlots('slotsPre', session.prevSlots.slots, target, false);
       document.getElementById('preTotal').textContent = session.prevSlots.targetIsFlat
-        ? session.prevSlots.compareVal.toLocaleString('id-ID')
+        ? session.prevSlots.compareVal.toLocaleString('en-US')
         : session.prevSlots.total + '%';
     }
 
     renderSlots('slotsPost', bestResult.slots, target, true);
     document.getElementById('postTotal').textContent = targetIsFlat
-      ? bestResult.compareVal.toLocaleString('id-ID')
+      ? bestResult.compareVal.toLocaleString('en-US')
       : bestResult.total + '%';
 
     // Verdict
@@ -786,18 +786,18 @@ function doRoll() {
     const vs = document.getElementById('verdictStrip');
     if (targetIsFlat) {
       vs.className = 'verdict-strip show fail';
-      vs.textContent = `${rollLabel} — Best ${targetLabel}: ${bestResult.compareVal.toLocaleString('id-ID')}`;
+      vs.textContent = `${rollLabel} — Best ${targetLabel}: ${bestResult.compareVal.toLocaleString('en-US')}`;
     } else {
       vs.className = 'verdict-strip show ' + (isWin ? 'success' : 'fail');
       vs.textContent = isWin
-        ? `✦ Berhasil! ${bestResult.total}% ≥ ${target}% — ${rollLabel} ✦`
+        ? `✦ Success! ${bestResult.total}% ≥ ${target}% — ${rollLabel} ✦`
         : `${rollLabel} — Best: ${bestResult.total}% (target ${target}%)`;
       if (isWin) spawnSparkles();
     }
 
     session.prevSlots = { slots: bestResult.slots, total: bestResult.total, compareVal: bestResult.compareVal, targetIsFlat };
 
-    // Catat pemakaian Pakiha per slot terkunci per roll
+    // Log Pakiha usage per locked slot per roll
     const activeLocks = Object.entries(lockedSlots);
     if (activeLocks.length > 0) {
       activeLocks.forEach(([idx, slot]) => {
@@ -827,7 +827,7 @@ function updateHistory() {
   document.getElementById('hWinCount').textContent = session.wins.toLocaleString();
   const lastFlat = h.length > 0 && h[h.length-1].targetIsFlat;
   document.getElementById('hBest').textContent = session.best > 0
-    ? (lastFlat ? session.best.toLocaleString('id-ID') : session.best + '%')
+    ? (lastFlat ? session.best.toLocaleString('en-US') : session.best + '%')
     : '—';
 
   // Show last 200, newest first
@@ -837,7 +837,7 @@ function updateHistory() {
       s.isTarget ? `<span class="h-ancient">✦${formatStatValue(s.statKey, s.val)}</span>` : `<span style="color:var(--text-dim)">—</span>`
     ).join(' ');
     const totalDisplay = e.targetIsFlat
-      ? (e.compareVal !== undefined ? e.compareVal.toLocaleString('id-ID') : e.total.toLocaleString('id-ID'))
+      ? (e.compareVal !== undefined ? e.compareVal.toLocaleString('en-US') : e.total.toLocaleString('en-US'))
       : e.total + '%';
     return `<div class="history-entry">
       <span class="h-num">#${e.rollNum}</span>
@@ -871,7 +871,7 @@ function renderDist(history, target) {
     const pct = (cnt / count * 100);
     const barW = maxCount > 0 ? (cnt / maxCount * 100).toFixed(1) : 0;
     const isWin = !targetIsFlat && parseFloat(val) >= target;
-    const label = targetIsFlat ? Math.round(parseFloat(val)).toLocaleString('id-ID') : parseFloat(val) + '%';
+    const label = targetIsFlat ? Math.round(parseFloat(val)).toLocaleString('en-US') : parseFloat(val) + '%';
     html += `<div class="dist-bar-wrap">
       <span class="dist-label">${label}</span>
       <div class="dist-bg"><div class="dist-fill" style="width:${barW}%;${isWin?'background:linear-gradient(90deg,#1a5530,var(--success))':''}"></div></div>
