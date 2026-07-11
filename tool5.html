@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -265,30 +265,30 @@
         </svg>
       </div>
       <div class="box-name">Gift Box × 10 Pull</div>
-      <p class="box-desc">Enjoy a <b style="color:var(--coral)">cool stroke of luck</b> from Pania this summer! Setiap 1x gacha membuka <b>10 item</b> secara acak sesuai rate.</p>
+      <p class="box-desc">Enjoy a <b style="color:var(--coral)">cool stroke of luck</b> from Pania this summer! Each 1x gacha opens <b>10 items</b> randomly based on the drop rates.</p>
 
       <div class="pity-block">
         <div class="pity-label"><span>Pity Counter</span><b id="pityText">0 / 10 pull</b></div>
         <div class="pity-bar"><div class="pity-fill" id="pityFill"></div></div>
-        <div class="pity-label" style="margin-top:6px;"><span>Setiap 10x pull (100 item), dapat bonus 100% <span style="color:var(--legendary)">Pania's Treasure Key</span></span></div>
+        <div class="pity-label" style="margin-top:6px;"><span>Every 10x pull (100 items), get a guaranteed 100% <span style="color:var(--legendary)">Pania's Treasure Key</span></span></div>
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-primary" id="pullBtn">🎁 Buka 1x Gift Box (10 Item)</button>
+        <button class="btn btn-primary" id="pullBtn">🎁 Open 1x Gift Box (10 Items)</button>
         <button class="btn btn-ghost" id="resetBtn">Reset</button>
       </div>
 
       <div class="stat-strip">
-        <div class="stat"><b id="statPulls">0</b><span>Total Pull</span></div>
-        <div class="stat"><b id="statItems">0</b><span>Total Item</span></div>
+        <div class="stat"><b id="statPulls">0</b><span>Total Pulls</span></div>
+        <div class="stat"><b id="statItems">0</b><span>Total Items</span></div>
         <div class="stat"><b id="statKeys">0</b><span>Treasure Key</span></div>
       </div>
     </div>
 
     <!-- RIGHT: Rate table -->
     <div class="panel">
-      <div class="rate-title">Rate Item</div>
-      <p class="rate-note">Total probabilitas 100%. Angka dalam kurung menunjukkan jumlah unit per item.</p>
+      <div class="rate-title">Item Rates</div>
+      <p class="rate-note">Total probability 100%. Numbers in parentheses indicate quantity per item.</p>
       <div class="rate-list" id="rateList"></div>
     </div>
 
@@ -297,20 +297,20 @@
   <!-- RESULTS -->
   <div class="panel results-panel">
     <div class="results-head">
-      <h2>Hasil Pembukaan Terbaru</h2>
-      <p id="resultsMeta">Belum ada pull</p>
+      <h2>Latest Pull Results</h2>
+      <p id="resultsMeta">No pulls yet</p>
     </div>
-    <div class="bonus-banner" id="bonusBanner">✨ Pity tercapai! +1 Pania's Treasure Key (100%) ✨</div>
+    <div class="bonus-banner" id="bonusBanner">✨ Pity reached! +1 Pania's Treasure Key (100% Guaranteed) ✨</div>
     <div id="resultsArea">
-      <div class="empty-hint">Tekan "Buka 1x Gift Box" untuk mulai membuka 10 item pertamamu.</div>
+      <div class="empty-hint">Press "Open 1x Gift Box" to start opening your first 10 items.</div>
     </div>
     <div class="log-toggle">
-      <button id="historyToggle">Tampilkan riwayat pull</button>
+      <button id="historyToggle">Show pull history</button>
     </div>
     <div id="history"></div>
   </div>
 
-  <footer>Simulasi hiburan dibuat berdasarkan tabel rate Pania's Summer Vacation Gift Box. Bukan produk resmi / tidak melibatkan uang sungguhan.</footer>
+  <footer>Entertainment simulator based on the Pania's Summer Vacation Gift Box rate table. Not an official product / no real money involved.</footer>
 </div>
 
 <script>
@@ -409,7 +409,7 @@ function updateStatsUI(){
 }
 
 function addHistory(entries){
-  const stamp = new Date().toLocaleTimeString('id-ID');
+  const stamp = new Date().toLocaleTimeString('en-US');
   entries.forEach(name => historyLog.unshift(`[${stamp}] ${name}`));
   const histEl = document.getElementById('history');
   histEl.innerHTML = historyLog.slice(0,300).map(l => `<div>${l}</div>`).join('');
@@ -451,7 +451,7 @@ document.getElementById('pullBtn').addEventListener('click', () => {
     addHistory(namesThisPull);
 
     document.getElementById('resultsMeta').textContent =
-      `Pull ke-${totalPulls} · ${totalItems} item terkumpul`;
+      `Pull #${totalPulls} · ${totalItems} items collected`;
 
     btn.disabled = false;
   }, 550);
@@ -460,8 +460,8 @@ document.getElementById('pullBtn').addEventListener('click', () => {
 document.getElementById('resetBtn').addEventListener('click', () => {
   totalPulls = 0; totalItems = 0; totalKeys = 0; historyLog = [];
   updateStatsUI();
-  document.getElementById('resultsArea').innerHTML = '<div class="empty-hint">Tekan "Buka 1x Gift Box" untuk mulai membuka 10 item pertamamu.</div>';
-  document.getElementById('resultsMeta').textContent = 'Belum ada pull';
+  document.getElementById('resultsArea').innerHTML = '<div class="empty-hint">Press "Open 1x Gift Box" to start opening your first 10 items.</div>';
+  document.getElementById('resultsMeta').textContent = 'No pulls yet';
   document.getElementById('bonusBanner').classList.remove('show');
   document.getElementById('history').innerHTML = '';
 });
@@ -469,7 +469,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 document.getElementById('historyToggle').addEventListener('click', (e) => {
   const hist = document.getElementById('history');
   hist.classList.toggle('show');
-  e.target.textContent = hist.classList.contains('show') ? 'Sembunyikan riwayat pull' : 'Tampilkan riwayat pull';
+  e.target.textContent = hist.classList.contains('show') ? 'Hide pull history' : 'Show pull history';
 });
 
 updateStatsUI();
