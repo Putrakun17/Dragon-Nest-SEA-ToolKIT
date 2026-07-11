@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -325,30 +325,30 @@
 
 <div class="app">
   <div class="header">
-    <div class="eyebrow">Simulator probabilitas</div>
+    <div class="eyebrow">Probability Simulator</div>
     <h1>Geraint's Growth Gacha</h1>
-    <div class="sub">Buka box terus sampai dapat item target</div>
+    <div class="sub">Open boxes until you get your target item</div>
   </div>
 
   <div class="panel">
 
     <div id="setup-view">
-      <div class="section-label">Pilih target</div>
+      <div class="section-label">Choose a target</div>
       <div class="target-grid" id="target-grid"></div>
       <div id="exchange-note" style="display:none; font-size:12px; color: var(--text-dim); background: var(--bg-card); border: 1px solid #2c2a45; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; line-height: 1.5;">
-        <span style="color: var(--gold-dim);">&#129689;</span> Simulasi juga berhenti otomatis kalau Coordination Coin sudah terkumpul 1.000, karena bisa ditukar jadi Blessed Geraint's Grow.
+        <span style="color: var(--gold-dim);">&#129689;</span> Simulation also stops automatically when Coordination Coins reach 2,250, as they can be exchanged for a Blessed Geraint's Grow.
       </div>
-      <button class="go-btn" id="go-btn">Go gacha</button>
+      <button class="go-btn" id="go-btn">Go Gacha</button>
     </div>
 
     <div class="box-anim" id="box-anim">
       <div class="box-icon">&#127873;</div>
-      <div class="counter" id="box-counter">Membuka box ke-0...</div>
+      <div class="counter" id="box-counter">Opening box #0...</div>
     </div>
 
     <div class="result-view" id="result-view">
       <div class="result-hero">
-        <div class="rlabel">Berhasil mendapat</div>
+        <div class="rlabel">Successfully obtained</div>
         <div class="ricon" id="result-icon">&#10024;</div>
         <div class="rname" id="result-item">-</div>
         <div class="rchance" id="result-chance">-</div>
@@ -356,20 +356,20 @@
 
       <div class="stats-grid" style="grid-template-columns: 1fr;">
         <div class="stat-card">
-          <div class="slabel">Total box dibuka</div>
+          <div class="slabel">Total boxes opened</div>
           <div class="sval" id="result-count">0</div>
         </div>
       </div>
 
-      <div class="log-label">Drop lain selama proses</div>
+      <div class="log-label">Other drops during the process</div>
       <div class="log-list" id="log-list"></div>
 
-      <button class="reset-btn" id="reset-btn">Coba lagi</button>
+      <button class="reset-btn" id="reset-btn">Try Again</button>
     </div>
 
   </div>
 
-  <div class="footer-note">Berdasarkan rate asli Geraint's Growth Challenge Box.<br>Hasil acak murni — bisa beruntung, bisa apes, sama seperti gacha aslinya.</div>
+  <div class="footer-note">Based on the actual rates from Geraint's Growth Challenge Box.<br>Pure RNG — you might get lucky or unlucky, just like the real gacha.</div>
 </div>
 
 <script>
@@ -436,7 +436,7 @@
     return ITEMS[ITEMS.length - 1];
   }
 
-  const COIN_EXCHANGE_THRESHOLD = 1000;
+  const COIN_EXCHANGE_THRESHOLD = 2250;
   const COIN_KEY = "coin";
 
   function runGacha(target){
@@ -472,18 +472,18 @@
   function renderResult(res){
     const heroLabel = document.querySelector('.result-hero .rlabel');
     if (res.wonByExchange){
-      heroLabel.textContent = 'Berhenti karena tukar koin';
+      heroLabel.textContent = 'Stopped — coin exchange reached';
       document.getElementById('result-icon').innerHTML = '&#129689;';
-      document.getElementById('result-item').textContent = '1.000 Coordination Coin';
-      document.getElementById('result-chance').textContent = 'Bisa ditukar jadi Blessed Geraint\'s Grow';
+      document.getElementById('result-item').textContent = '2,250 Coordination Coin';
+      document.getElementById('result-chance').textContent = 'Can be exchanged for Blessed Geraint\'s Grow';
     } else {
-      heroLabel.textContent = 'Berhasil mendapat';
+      heroLabel.textContent = 'Successfully obtained';
       document.getElementById('result-icon').innerHTML = res.target.icon;
       document.getElementById('result-item').textContent = res.target.name;
-      document.getElementById('result-chance').textContent = 'Peluang per box: ' + res.target.pct + '%';
+      document.getElementById('result-chance').textContent = 'Chance per box: ' + res.target.pct + '%';
     }
 
-    document.getElementById('result-count').textContent = res.count.toLocaleString('id-ID');
+    document.getElementById('result-count').textContent = res.count.toLocaleString('en-US');
 
     const logList = document.getElementById('log-list');
     logList.innerHTML = '';
@@ -491,14 +491,14 @@
     if (entries.length === 0){
       const row = document.createElement('div');
       row.className = 'log-empty';
-      row.textContent = 'Langsung dapat di box pertama, sangat beruntung!';
+      row.textContent = 'Got it on the very first box — incredibly lucky!';
       logList.appendChild(row);
     } else {
       entries.forEach(([name, n]) => {
         const row = document.createElement('div');
         row.className = 'log-row';
         const isCoinAtCap = res.wonByExchange && name === "Coordination Coin";
-        row.innerHTML = '<span class="lname">' + name + (isCoinAtCap ? ' (capai target tukar)' : '') + '</span><span class="lcount">' + n.toLocaleString('id-ID') + 'x</span>';
+        row.innerHTML = '<span class="lname">' + name + (isCoinAtCap ? ' (exchange target reached)' : '') + '</span><span class="lcount">' + n.toLocaleString('en-US') + 'x</span>';
         logList.appendChild(row);
       });
     }
@@ -516,7 +516,7 @@
     const target = selectedTarget;
     const interval = setInterval(() => {
       tick++;
-      boxCounter.textContent = 'Membuka box ke-' + tick.toLocaleString('id-ID') + '...';
+      boxCounter.textContent = 'Opening box #' + tick.toLocaleString('en-US') + '...';
     }, 40);
 
     setTimeout(() => {
