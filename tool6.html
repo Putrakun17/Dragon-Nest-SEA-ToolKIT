@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -260,28 +260,184 @@
     color: var(--text-dim);
     white-space: nowrap;
   }
+
+  /* Token counter */
+  .token-bar {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid rgba(42,46,68,0.5);
+    padding: 16px 20px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .token-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .token-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .token-count {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 16px #f0c04060;
+    min-width: 48px;
+    text-align: right;
+    line-height: 1;
+  }
+
+  .token-icon {
+    font-size: 1.4rem;
+  }
+
+  .token-reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.06em;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .token-reset-btn:hover {
+    border-color: #666;
+    color: var(--text);
+  }
+
+  .token-gained {
+    font-size: 0.82rem;
+    color: var(--gold-dim);
+    font-style: italic;
+  }
+
+  .result-token {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  /* Gacha info bar */
+  .gacha-info-bar {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    margin-top: -12px;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .gacha-info-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .gacha-info-label {
+    font-size: 0.64rem;
+    color: var(--text-muted, #5a5040);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .gacha-info-value {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+
+  .gacha-info-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+    flex-shrink: 0;
+    margin: 0 4px;
+  }
 </style>
 </head>
 <body>
 
 <h1>Claw Simulation</h1>
 
+<!-- Token Bar -->
+<div class="token-bar">
+  <div>
+    <div class="token-label">Total Tokens Collected</div>
+    <div class="token-gained" id="tokenGainedLabel">&nbsp;</div>
+  </div>
+  <div class="token-display">
+    <span class="token-icon">🪙</span>
+    <span class="token-count" id="tokenCount">0</span>
+  </div>
+  <button class="token-reset-btn" onclick="resetTokens()">Reset</button>
+</div>
+
+<!-- Gacha Count Info -->
+<div class="gacha-info-bar">
+  <div class="gacha-info-item">
+    <span class="gacha-info-label">Total Pulls</span>
+    <span class="gacha-info-value" id="totalGachaCount">0x</span>
+  </div>
+  <div class="gacha-info-divider"></div>
+  <div class="gacha-info-item">
+    <span class="gacha-info-label">Last Pull</span>
+    <span class="gacha-info-value" id="lastGachaCount">—</span>
+  </div>
+  <div class="gacha-info-divider"></div>
+  <div class="gacha-info-item">
+    <span class="gacha-info-label">Avg Token/Pull</span>
+    <span class="gacha-info-value" id="avgTokenPerGacha">—</span>
+  </div>
+</div>
+
 <!-- Controls -->
 <div class="controls">
-  <div class="controls-label">Jumlah Gacha</div>
+  <div class="controls-label">Number of Pulls</div>
   <div class="count-btns">
-    <button class="count-btn selected" id="btn1x" onclick="selectCount(1)">1x Gacha</button>
-    <button class="count-btn" id="btn10x" onclick="selectCount(10)">10x Gacha</button>
+    <button class="count-btn selected" id="btn1x" onclick="selectCount(1)">1x Pull</button>
+    <button class="count-btn" id="btn10x" onclick="selectCount(10)">10x Pull</button>
   </div>
-  <button class="start-btn" id="startBtn" onclick="doGacha()">✦ Start Gacha ✦</button>
+  <button class="start-btn" id="startBtn" onclick="doGacha()">✦ Start Pull ✦</button>
 </div>
 
 <!-- Results -->
 <div class="results-box" id="resultsBox">
-  <div class="empty-state">Tekan Start Gacha untuk memulai</div>
+  <div class="empty-state">Press Start Pull to begin</div>
 </div>
 
-<button class="pool-info-toggle" onclick="togglePoolInfo()" id="infoToggle">Lihat daftar item pool ▾</button>
+<button class="pool-info-toggle" onclick="togglePoolInfo()" id="infoToggle">View item pool list ▾</button>
 
 <table class="pool-table" id="poolTable">
   <thead>
@@ -295,6 +451,53 @@
 </table>
 
 <script>
+// Token drop rates
+const TOKEN_RATES = [
+  { tokens: 1, rate: 10 },
+  { tokens: 2, rate: 15 },
+  { tokens: 3, rate: 25 },
+  { tokens: 4, rate: 25 },
+  { tokens: 5, rate: 25 },
+];
+// Total = 100%, so no-token = 0% (every pull gives tokens)
+
+let totalTokens = 0;
+let totalGachaCount = 0;
+
+function updateGachaInfo(lastCount) {
+  document.getElementById('totalGachaCount').textContent = totalGachaCount + 'x';
+  document.getElementById('lastGachaCount').textContent = lastCount + 'x';
+  const avg = totalGachaCount > 0 ? (totalTokens / totalGachaCount).toFixed(2) : '—';
+  document.getElementById('avgTokenPerGacha').textContent = avg !== '—' ? avg : '—';
+}
+
+function rollToken() {
+  const r = Math.random() * 100;
+  let acc = 0;
+  for (const t of TOKEN_RATES) {
+    acc += t.rate;
+    if (r < acc) return t.tokens;
+  }
+  return TOKEN_RATES[TOKEN_RATES.length - 1].tokens;
+}
+
+function updateTokenDisplay(gained) {
+  document.getElementById('tokenCount').textContent = totalTokens;
+  if (gained > 0) {
+    document.getElementById('tokenGainedLabel').textContent = `+${gained} from this pull`;
+  }
+}
+
+function resetTokens() {
+  totalTokens = 0;
+  totalGachaCount = 0;
+  document.getElementById('tokenCount').textContent = '0';
+  document.getElementById('tokenGainedLabel').innerHTML = '&nbsp;';
+  document.getElementById('totalGachaCount').textContent = '0x';
+  document.getElementById('lastGachaCount').textContent = '—';
+  document.getElementById('avgTokenPerGacha').textContent = '—';
+}
+
 const POOL = [
   { name: "Collapse Essence (Untradable) Common Pouch", qty: 1, rate: 11.98, type: 'rare' },
   { name: "[GM] Item Protection Magic Jelly (5000) Pouch", qty: 5000, rate: 11.98, type: 'rare' },
@@ -354,15 +557,29 @@ function weightedRandom() {
 
 function doGacha() {
   const results = [];
-  for (let i = 0; i < gachaCount; i++) results.push(weightedRandom());
+  let gainedTokens = 0;
+
+  for (let i = 0; i < gachaCount; i++) {
+    const item = weightedRandom();
+    const tok = rollToken();
+    gainedTokens += tok;
+    results.push({ item, tok });
+  }
+
+  totalTokens += gainedTokens;
+  totalGachaCount += gachaCount;
+  updateTokenDisplay(gainedTokens);
+  updateGachaInfo(gachaCount);
 
   const box = document.getElementById('resultsBox');
-  const titleHTML = `<div class="results-title">Hasil Gacha (${gachaCount}x)</div>`;
-  const itemsHTML = results.map(item => `
+  const titleHTML = `<div class="results-title">Pull Results (${gachaCount}x) · <span style="color:var(--gold)">+${gainedTokens} Token</span></div>`;
+
+  const itemsHTML = results.map(({ item, tok }) => `
     <div class="result-item ${item.type}">
       <span class="result-name">
         ${item.name}${item.qty > 1 ? `<span class="qty">×${item.qty}</span>` : ''}
         <span class="item-tag ${item.type}">${item.type === 'rare' ? 'Rare' : 'Epic'}</span>
+        <span class="result-token">🪙 +${tok} token</span>
       </span>
       <span class="result-rate ${item.type}">${item.rate.toFixed(2)}%</span>
     </div>
@@ -377,11 +594,11 @@ function togglePoolInfo() {
   const btn = document.getElementById('infoToggle');
   if (poolInfoVisible) {
     table.classList.add('visible');
-    btn.textContent = 'Sembunyikan daftar item ▴';
+    btn.textContent = 'Hide item pool list ▴';
     renderPoolTable();
   } else {
     table.classList.remove('visible');
-    btn.textContent = 'Lihat daftar item pool ▾';
+    btn.textContent = 'View item pool list ▾';
   }
 }
 
