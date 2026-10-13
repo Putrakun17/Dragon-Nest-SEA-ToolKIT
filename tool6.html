@@ -338,6 +338,71 @@
     font-style: italic;
   }
 
+  /* Pity bar */
+  .pity-bar {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+  }
+
+  .pity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .pity-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pity-counter {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--epic, #c084fc);
+  }
+
+  .pity-track {
+    width: 100%;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .pity-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--purple-dim), var(--epic, #c084fc));
+    transition: width 0.3s ease;
+  }
+
+  .pity-hint {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .pity-hint.guaranteed {
+    color: var(--epic, #c084fc);
+    font-weight: 600;
+  }
+
+  .result-item.pity-epic {
+    border-left-color: #ff80ff;
+    background: #1a0828;
+    box-shadow: 0 0 12px #c084fc30 inset;
+  }
+
   .result-token {
     display: flex;
     align-items: center;
@@ -431,6 +496,18 @@
   </div>
 </div>
 
+<!-- Pity Bar -->
+<div class="pity-bar">
+  <div class="pity-header">
+    <span class="pity-label">Epic Pity</span>
+    <span class="pity-counter"><span id="pityCount">0</span> / 31</span>
+  </div>
+  <div class="pity-track">
+    <div class="pity-fill" id="pityFill" style="width:0%"></div>
+  </div>
+  <div class="pity-hint" id="pityHint">Next Epic guaranteed at spin #31</div>
+</div>
+
 <!-- Controls -->
 <div class="controls">
   <div class="controls-label">Number of Pulls</div>
@@ -463,56 +540,6 @@
 </div>
 
 <script>
-// Token drop rates
-const TOKEN_RATES = [
-  { tokens: 1, rate: 10 },
-  { tokens: 2, rate: 15 },
-  { tokens: 3, rate: 25 },
-  { tokens: 4, rate: 25 },
-  { tokens: 5, rate: 25 },
-];
-// Total = 100%, so no-token = 0% (every pull gives tokens)
-
-let totalTokens = 0;
-let totalGachaCount = 0;
-let obtainedMap = {}; // key: item name, value: { item, count }
-
-function updateGachaInfo(lastCount) {
-  document.getElementById('totalGachaCount').textContent = totalGachaCount + 'x';
-  document.getElementById('lastGachaCount').textContent = lastCount + 'x';
-  const avg = totalGachaCount > 0 ? (totalTokens / totalGachaCount).toFixed(2) : '—';
-  document.getElementById('avgTokenPerGacha').textContent = avg !== '—' ? avg : '—';
-}
-
-function rollToken() {
-  const r = Math.random() * 100;
-  let acc = 0;
-  for (const t of TOKEN_RATES) {
-    acc += t.rate;
-    if (r < acc) return t.tokens;
-  }
-  return TOKEN_RATES[TOKEN_RATES.length - 1].tokens;
-}
-
-function updateTokenDisplay(gained) {
-  document.getElementById('tokenCount').textContent = totalTokens;
-  if (gained > 0) {
-    document.getElementById('tokenGainedLabel').textContent = `+${gained} from this pull`;
-  }
-}
-
-function resetTokens() {
-  totalTokens = 0;
-  totalGachaCount = 0;
-  obtainedMap = {};
-  document.getElementById('tokenCount').textContent = '0';
-  document.getElementById('tokenGainedLabel').innerHTML = '&nbsp;';
-  document.getElementById('totalGachaCount').textContent = '0x';
-  document.getElementById('lastGachaCount').textContent = '—';
-  document.getElementById('avgTokenPerGacha').textContent = '—';
-  renderObtainedTable();
-}
-
 const POOL = [
   { name: "Collapse Essence (Untradable) Common Pouch", qty: 1, rate: 11.98, type: 'rare' },
   { name: "[GM] Item Protection Magic Jelly (5000) Pouch", qty: 5000, rate: 11.98, type: 'rare' },
@@ -551,21 +578,95 @@ const POOL = [
   { name: "Blessed Black Dragon's Ancient Element Special Talisman Pouch", qty: 1, rate: 1.69, type: 'epic' },
 ];
 
+const RARE_POOL = POOL.filter(i => i.type === 'rare');
+const EPIC_POOL  = POOL.filter(i => i.type === 'epic');
+
 let gachaCount = 1;
+
+// Token drop rates
+const TOKEN_RATES = [
+  { tokens: 1, rate: 10 },
+  { tokens: 2, rate: 15 },
+  { tokens: 3, rate: 25 },
+  { tokens: 4, rate: 25 },
+  { tokens: 5, rate: 25 },
+];
+
+let totalTokens = 0;
+let totalGachaCount = 0;
+let obtainedMap = {};
+let pityCounter = 0;
+
+function weightedFrom(pool) {
+  const total = pool.reduce((s, i) => s + i.rate, 0);
+  let r = Math.random() * total;
+  for (const item of pool) {
+    r -= item.rate;
+    if (r <= 0) return item;
+  }
+  return pool[pool.length - 1];
+}
+
+function updatePityDisplay() {
+  document.getElementById('pityCount').textContent = pityCounter;
+  const pct = (pityCounter / 31) * 100;
+  document.getElementById('pityFill').style.width = pct + '%';
+  const hint = document.getElementById('pityHint');
+  if (pityCounter === 0) {
+    hint.textContent = 'Next Epic guaranteed at spin #31';
+    hint.className = 'pity-hint';
+  } else if (pityCounter >= 31) {
+    hint.textContent = '⚡ Epic guaranteed on next spin!';
+    hint.className = 'pity-hint guaranteed';
+  } else {
+    const remaining = 31 - pityCounter;
+    hint.textContent = `${remaining} spin${remaining > 1 ? 's' : ''} until guaranteed Epic`;
+    hint.className = 'pity-hint';
+  }
+}
+
+function updateGachaInfo(lastCount) {
+  document.getElementById('totalGachaCount').textContent = totalGachaCount + 'x';
+  document.getElementById('lastGachaCount').textContent = lastCount + 'x';
+  const avg = totalGachaCount > 0 ? (totalTokens / totalGachaCount).toFixed(2) : '—';
+  document.getElementById('avgTokenPerGacha').textContent = avg !== '—' ? avg : '—';
+}
+
+function rollToken() {
+  const r = Math.random() * 100;
+  let acc = 0;
+  for (const t of TOKEN_RATES) {
+    acc += t.rate;
+    if (r < acc) return t.tokens;
+  }
+  return TOKEN_RATES[TOKEN_RATES.length - 1].tokens;
+}
+
+function updateTokenDisplay(gained) {
+  document.getElementById('tokenCount').textContent = totalTokens;
+  if (gained > 0) {
+    document.getElementById('tokenGainedLabel').textContent = `+${gained} from this pull`;
+  }
+}
+
+function resetTokens() {
+  totalTokens = 0;
+  totalGachaCount = 0;
+  obtainedMap = {};
+  pityCounter = 0;
+  document.getElementById('tokenCount').textContent = '0';
+  document.getElementById('tokenGainedLabel').innerHTML = '&nbsp;';
+  document.getElementById('totalGachaCount').textContent = '0x';
+  document.getElementById('lastGachaCount').textContent = '—';
+  document.getElementById('avgTokenPerGacha').textContent = '—';
+  renderObtainedTable();
+  updatePityDisplay();
+}
+
 function selectCount(n) {
   gachaCount = n;
   document.getElementById('btn1x').classList.toggle('selected', n === 1);
   document.getElementById('btn10x').classList.toggle('selected', n === 10);
-}
-
-function weightedRandom() {
-  const total = POOL.reduce((s, i) => s + i.rate, 0);
-  let r = Math.random() * total;
-  for (const item of POOL) {
-    r -= item.rate;
-    if (r <= 0) return item;
-  }
-  return POOL[POOL.length - 1];
 }
 
 function doGacha() {
@@ -573,11 +674,25 @@ function doGacha() {
   let gainedTokens = 0;
 
   for (let i = 0; i < gachaCount; i++) {
-    const item = weightedRandom();
+    pityCounter++;
+    let item, isPity = false;
+
+    if (pityCounter >= 31) {
+      // Guaranteed epic on spin 31
+      item = weightedFrom(EPIC_POOL);
+      isPity = true;
+      pityCounter = 0;
+    } else {
+      // Only rare allowed on spins 1–29
+      item = weightedFrom(RARE_POOL);
+    }
+
     const tok = rollToken();
     gainedTokens += tok;
-    results.push({ item, tok });
+    results.push({ item, tok, isPity });
   }
+
+  updatePityDisplay();
 
   totalTokens += gainedTokens;
   totalGachaCount += gachaCount;
@@ -597,11 +712,12 @@ function doGacha() {
   const box = document.getElementById('resultsBox');
   const titleHTML = `<div class="results-title">Pull Results (${gachaCount}x) · <span style="color:var(--gold)">+${gainedTokens} Token</span></div>`;
 
-  const itemsHTML = results.map(({ item, tok }) => `
-    <div class="result-item ${item.type}">
+  const itemsHTML = results.map(({ item, tok, isPity }) => `
+    <div class="result-item ${isPity ? 'pity-epic' : item.type}">
       <span class="result-name">
         ${item.name}${item.qty > 1 ? `<span class="qty">×${item.qty}</span>` : ''}
         <span class="item-tag ${item.type}">${item.type === 'rare' ? 'Rare' : 'Epic'}</span>
+        ${isPity ? `<span class="item-tag epic" style="background:#2a0840;border-color:#9020d0">✦ Pity</span>` : ''}
         <span class="result-token">🪙 +${tok} token</span>
       </span>
       <span class="result-rate ${item.type}">${item.rate.toFixed(2)}%</span>
