@@ -238,6 +238,15 @@
 
   .pool-table.visible { display: table; }
 
+  .obtained-box {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
   .pool-table th {
     background: var(--surface2);
     color: var(--text-dim);
@@ -437,18 +446,21 @@
   <div class="empty-state">Press Start Pull to begin</div>
 </div>
 
-<button class="pool-info-toggle" onclick="togglePoolInfo()" id="infoToggle">View item pool list ▾</button>
+<button class="pool-info-toggle" onclick="toggleObtained()" id="infoToggle">Items Obtained ▾</button>
 
-<table class="pool-table" id="poolTable">
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Qty</th>
-      <th>Rate</th>
-    </tr>
-  </thead>
-  <tbody id="poolTableBody"></tbody>
-</table>
+<div class="obtained-box" id="obtainedBox" style="display:none;">
+  <table id="obtainedTable" style="width:100%;border-collapse:collapse;font-size:0.75rem;">
+    <thead>
+      <tr>
+        <th style="background:var(--surface2);color:var(--text-dim);padding:6px 10px;text-align:left;font-weight:500;border-bottom:1px solid var(--border);">Item</th>
+        <th style="background:var(--surface2);color:var(--text-dim);padding:6px 10px;text-align:center;font-weight:500;border-bottom:1px solid var(--border);">Count</th>
+      </tr>
+    </thead>
+    <tbody id="obtainedTableBody">
+      <tr><td colspan="2" style="text-align:center;color:var(--text-dim);padding:16px">No items obtained yet</td></tr>
+    </tbody>
+  </table>
+</div>
 
 <script>
 // Token drop rates
@@ -463,6 +475,7 @@ const TOKEN_RATES = [
 
 let totalTokens = 0;
 let totalGachaCount = 0;
+let obtainedMap = {}; // key: item name, value: { item, count }
 
 function updateGachaInfo(lastCount) {
   document.getElementById('totalGachaCount').textContent = totalGachaCount + 'x';
@@ -491,11 +504,13 @@ function updateTokenDisplay(gained) {
 function resetTokens() {
   totalTokens = 0;
   totalGachaCount = 0;
+  obtainedMap = {};
   document.getElementById('tokenCount').textContent = '0';
   document.getElementById('tokenGainedLabel').innerHTML = '&nbsp;';
   document.getElementById('totalGachaCount').textContent = '0x';
   document.getElementById('lastGachaCount').textContent = '—';
   document.getElementById('avgTokenPerGacha').textContent = '—';
+  renderObtainedTable();
 }
 
 const POOL = [
@@ -537,8 +552,6 @@ const POOL = [
 ];
 
 let gachaCount = 1;
-let poolInfoVisible = false;
-
 function selectCount(n) {
   gachaCount = n;
   document.getElementById('btn1x').classList.toggle('selected', n === 1);
@@ -571,6 +584,16 @@ function doGacha() {
   updateTokenDisplay(gainedTokens);
   updateGachaInfo(gachaCount);
 
+  // Track obtained items
+  for (const { item } of results) {
+    if (obtainedMap[item.name]) {
+      obtainedMap[item.name].count++;
+    } else {
+      obtainedMap[item.name] = { item, count: 1 };
+    }
+  }
+  renderObtainedTable();
+
   const box = document.getElementById('resultsBox');
   const titleHTML = `<div class="results-title">Pull Results (${gachaCount}x) · <span style="color:var(--gold)">+${gainedTokens} Token</span></div>`;
 
@@ -588,27 +611,34 @@ function doGacha() {
   box.innerHTML = titleHTML + itemsHTML;
 }
 
-function togglePoolInfo() {
-  poolInfoVisible = !poolInfoVisible;
-  const table = document.getElementById('poolTable');
+let obtainedVisible = false;
+
+function toggleObtained() {
+  obtainedVisible = !obtainedVisible;
+  const box = document.getElementById('obtainedBox');
   const btn = document.getElementById('infoToggle');
-  if (poolInfoVisible) {
-    table.classList.add('visible');
-    btn.textContent = 'Hide item pool list ▴';
-    renderPoolTable();
-  } else {
-    table.classList.remove('visible');
-    btn.textContent = 'View item pool list ▾';
-  }
+  box.style.display = obtainedVisible ? 'block' : 'none';
+  btn.textContent = obtainedVisible ? 'Items Obtained ▴' : 'Items Obtained ▾';
 }
 
-function renderPoolTable() {
-  const tbody = document.getElementById('poolTableBody');
-  tbody.innerHTML = POOL.map(item => `
+function renderObtainedTable() {
+  const tbody = document.getElementById('obtainedTableBody');
+  const entries = Object.values(obtainedMap);
+  if (entries.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:var(--text-dim);padding:16px">No items obtained yet</td></tr>`;
+    return;
+  }
+  // Sort by count desc
+  entries.sort((a, b) => b.count - a.count);
+  tbody.innerHTML = entries.map(({ item, count }) => `
     <tr>
-      <td>${item.name} <span class="item-tag ${item.type}">${item.type === 'rare' ? 'Rare' : 'Epic'}</span></td>
-      <td style="text-align:center;color:var(--text-dim)">${item.qty}</td>
-      <td class="rate-cell">${item.rate.toFixed(2)}%</td>
+      <td>
+        ${item.name}
+        <span class="item-tag ${item.type}">${item.type === 'rare' ? 'Rare' : 'Epic'}</span>
+      </td>
+      <td style="text-align:center;font-family:'Cinzel',serif;font-weight:700;color:${count > 1 ? 'var(--gold)' : 'var(--text-dim)'}">
+        ${count > 1 ? '×' + count : count}
+      </td>
     </tr>
   `).join('');
 }
