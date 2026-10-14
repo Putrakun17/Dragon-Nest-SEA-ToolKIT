@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unpredictable Destiny Box</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0812;
+    --surface: #120f1e;
+    --surface2: #1a1530;
+    --border: #2a2245;
+    --accent: #b078ff;
+    --accent2: #ff6eb4;
+    --gold: #ffd86e;
+    --text: #e8e0ff;
+    --text-dim: #7a6fa0;
+    --unique: #ff6eb4;
+    --rare: #b078ff;
+    --common: #8ab4f8;
+
+    --rarity-bestie: #ff4d6d;
+    --rarity-event: #ff9f1c;
+    --rarity-exchange: #4cc9f0;
+    --rarity-normal: #a0a8c0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #0a0812;
+      --text: #e8e0ff;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #06040f;
+    background-image:
+      /* Nebula core — deep violet bloom center */
+      radial-gradient(ellipse 80% 60% at 50% 20%, rgba(90,30,160,0.55) 0%, transparent 70%),
+      /* Magenta fate pulse — upper right */
+      radial-gradient(ellipse 55% 45% at 85% 5%, rgba(180,40,120,0.35) 0%, transparent 65%),
+      /* Indigo rift — left edge */
+      radial-gradient(ellipse 45% 70% at 0% 50%, rgba(40,20,100,0.5) 0%, transparent 70%),
+      /* Golden oracle glow — lower center */
+      radial-gradient(ellipse 60% 35% at 50% 100%, rgba(120,70,10,0.4) 0%, transparent 60%),
+      /* Teal fate thread — lower right */
+      radial-gradient(ellipse 40% 40% at 95% 85%, rgba(20,80,120,0.3) 0%, transparent 65%),
+      /* Stars — small white dots scattered */
+      radial-gradient(1.5px 1.5px at 12% 8%,  rgba(255,255,255,0.75) 0%, transparent 100%),
+      radial-gradient(1px 1px   at 27% 18%,   rgba(255,255,255,0.5)  0%, transparent 100%),
+      radial-gradient(2px 2px   at 43% 6%,    rgba(220,200,255,0.6)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 63% 14%,   rgba(255,255,255,0.45) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 78% 9%,  rgba(255,210,240,0.6)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 91% 22%,   rgba(255,255,255,0.5)  0%, transparent 100%),
+      radial-gradient(2px 2px   at 6%  33%,   rgba(200,180,255,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 18% 44%,   rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 34% 39%, rgba(255,255,255,0.55) 0%, transparent 100%),
+      radial-gradient(1px 1px   at 55% 47%,   rgba(255,230,200,0.4)  0%, transparent 100%),
+      radial-gradient(2px 2px   at 72% 35%,   rgba(255,255,255,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 88% 41%,   rgba(200,220,255,0.45) 0%, transparent 100%),
+      radial-gradient(1px 1px   at 9%  58%,   rgba(255,255,255,0.4)  0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 23% 65%, rgba(255,200,255,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 47% 62%,   rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(2px 2px   at 66% 70%,   rgba(220,210,255,0.55) 0%, transparent 100%),
+      radial-gradient(1px 1px   at 81% 58%,   rgba(255,255,255,0.4)  0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 95% 66%, rgba(255,240,200,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 14% 78%,   rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(2px 2px   at 38% 83%,   rgba(200,190,255,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 57% 88%,   rgba(255,255,255,0.4)  0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 74% 82%, rgba(255,220,240,0.5)  0%, transparent 100%),
+      radial-gradient(1px 1px   at 90% 92%,   rgba(255,255,255,0.35) 0%, transparent 100%),
+      /* Base deep space */
+      linear-gradient(160deg, #0d0620 0%, #06040f 45%, #0a0618 100%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    overflow-x: hidden;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .header-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    opacity: 0.7;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* Box visual */
+  .box-visual {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+
+  .destiny-box {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .destiny-box:hover { transform: scale(1.05); }
+
+  .destiny-box svg { width: 100%; height: 100%; }
+
+  /* Pull buttons */
+  .pull-area {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+
+  .btn {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .btn:hover::before { opacity: 1; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-1x {
+    background: linear-gradient(135deg, #3d2a6e, #5c3fa0);
+    color: #e0d4ff;
+    box-shadow: 0 4px 18px rgba(120,80,220,0.35);
+  }
+
+  .btn-10x {
+    background: linear-gradient(135deg, #6b2550, #b0396e);
+    color: #ffe4f0;
+    box-shadow: 0 4px 18px rgba(180,60,120,0.35);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(120,80,220,0.5);
+  }
+
+  .btn-10x:hover {
+    box-shadow: 0 8px 24px rgba(180,60,120,0.5);
+  }
+
+  /* Results area */
+  .results-wrapper {
+    min-height: 60px;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .results-header.visible { opacity: 1; }
+
+  .results-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pull-count {
+    font-size: 12px;
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 2px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .clear-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .clear-btn:hover { color: var(--text); border-color: var(--text-dim); }
+
+  /* Item card shared */
+  .item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-bestie  { background: var(--rarity-bestie); box-shadow: 0 0 6px var(--rarity-bestie); }
+  .dot-event   { background: var(--rarity-event);  box-shadow: 0 0 6px var(--rarity-event); }
+  .dot-exchange{ background: var(--rarity-exchange);box-shadow: 0 0 6px var(--rarity-exchange); }
+  .dot-special { background: var(--rare); box-shadow: 0 0 6px var(--rare); }
+  .dot-normal  { background: var(--rarity-normal); }
+
+  .item-info { flex: 1; min-width: 0; }
+
+  .item-name {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-rate {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  /* Pull results — individual cards per roll */
+  .pull-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .item-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .item-card[data-rarity="bestie"]  { border-color: rgba(255,77,109,0.4); background: rgba(255,77,109,0.05); }
+  .item-card[data-rarity="event"]   { border-color: rgba(255,159,28,0.4); background: rgba(255,159,28,0.05); }
+  .item-card[data-rarity="exchange"]{ border-color: rgba(76,201,240,0.4); background: rgba(76,201,240,0.05); }
+  .item-card[data-rarity="special"] { border-color: rgba(176,120,255,0.4); background: rgba(176,120,255,0.05); }
+
+  .item-card[data-rarity="bestie"]  .item-name { color: #ff8fa3; }
+  .item-card[data-rarity="event"]   .item-name { color: #ffc654; }
+  .item-card[data-rarity="exchange"].item-name { color: #7dd8f5; }
+  .item-card[data-rarity="special"] .item-name { color: #c9a0ff; }
+
+  /* Inventory — stacked */
+  .inventory-section {
+    margin-top: 40px;
+  }
+
+  .inventory-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .inv-toggle-label {
+    margin-left: auto;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    margin-right: 6px;
+  }
+
+  .inv-chevron {
+    color: var(--text-dim);
+    font-size: 14px;
+    transition: transform 0.2s;
+  }
+
+  .inv-grid.hidden { display: none; }
+
+  .inventory-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .inv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .inv-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .inv-card[data-rarity="bestie"]  { border-color: rgba(255,77,109,0.4); background: rgba(255,77,109,0.05); }
+  .inv-card[data-rarity="event"]   { border-color: rgba(255,159,28,0.4); background: rgba(255,159,28,0.05); }
+  .inv-card[data-rarity="exchange"]{ border-color: rgba(76,201,240,0.4); background: rgba(76,201,240,0.05); }
+  .inv-card[data-rarity="special"] { border-color: rgba(176,120,255,0.4); background: rgba(176,120,255,0.05); }
+
+  .inv-card[data-rarity="bestie"]  .item-name { color: #ff8fa3; }
+  .inv-card[data-rarity="event"]   .item-name { color: #ffc654; }
+  .inv-card[data-rarity="exchange"].item-name { color: #7dd8f5; }
+  .inv-card[data-rarity="special"] .item-name { color: #c9a0ff; }
+
+  .item-qty {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    flex-shrink: 0;
+    min-width: 24px;
+    text-align: right;
+  }
+
+
+
+
+
+  @media (max-width: 480px) {
+    .pull-area { gap: 8px; }
+    .btn { font-size: 13px; padding: 12px 20px; }
+    .item-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Unpredictable Destiny Box</h1>
+    <h1>October 2026</h1>
+  </div>
+
+  <div class="box-visual">
+    <div class="destiny-box" id="boxVisual" title="Pull to open">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3d2a6e"/>
+            <stop offset="100%" stop-color="#6b2550"/>
+          </linearGradient>
+          <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#5c3fa0"/>
+            <stop offset="100%" stop-color="#b0396e"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Box body -->
+        <rect x="12" y="42" width="76" height="50" rx="4" fill="url(#boxGrad)" stroke="#7a50c0" stroke-width="1.5"/>
+        <!-- Box lid -->
+        <rect x="8" y="34" width="84" height="14" rx="3" fill="url(#lidGrad)" stroke="#b060a0" stroke-width="1.5"/>
+        <!-- Ribbon vertical -->
+        <rect x="47" y="34" width="6" height="58" fill="rgba(255,200,80,0.5)"/>
+        <!-- Ribbon horizontal on lid -->
+        <rect x="8" y="39" width="84" height="4" fill="rgba(255,200,80,0.4)"/>
+        <!-- Star sparkles -->
+        <text x="50" y="72" text-anchor="middle" font-size="20" fill="rgba(255,220,120,0.8)" filter="url(#glow)">✦</text>
+        <text x="30" y="60" text-anchor="middle" font-size="10" fill="rgba(180,120,255,0.7)">✦</text>
+        <text x="72" y="65" text-anchor="middle" font-size="8" fill="rgba(255,110,180,0.7)">✦</text>
+        <!-- Bow -->
+        <ellipse cx="40" cy="34" rx="12" ry="8" fill="#ff6eb4" opacity="0.8" transform="rotate(-20,40,34)"/>
+        <ellipse cx="60" cy="34" rx="12" ry="8" fill="#ff6eb4" opacity="0.8" transform="rotate(20,60,34)"/>
+        <circle cx="50" cy="34" r="5" fill="#ffb8d8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="pull-area">
+    <button class="btn btn-1x" id="pull1Btn">Pull × 1</button>
+    <button class="btn btn-10x" id="pull10Btn">Pull × 10</button>
+  </div>
+
+  <!-- Pull results -->
+  <div class="results-wrapper">
+    <div class="results-header" id="resultsHeader">
+      <h2>Last Pull</h2>
+      <span class="pull-count" id="pullCountBadge">0 pulls</span>
+      <button class="clear-btn" id="clearBtn">Clear All</button>
+    </div>
+    <div class="pull-grid" id="pullGrid"></div>
+  </div>
+
+  <!-- Inventory -->
+  <div class="inventory-section" id="inventorySection" style="display:none">
+    <div class="inventory-header" id="invToggle" style="cursor:pointer;user-select:none;">
+      <h2>View Your Items</h2>
+      <span class="pull-count" id="invCountBadge">0 unique</span>
+      <span class="inv-toggle-label">Hide / Show</span><span class="inv-chevron" id="invChevron">▸</span>
+    </div>
+    <div class="inv-grid hidden" id="invGrid"></div>
+  </div>
+
+
+</div>
+
+
+
+<script>
+const ITEMS = [
+  { id:1,  name:"[Bestie] Bloodflayer Saber",          rate:0.02,  rarity:"bestie"   },
+  { id:2,  name:"[Bestie] Abyss Throne",               rate:0.06,  rarity:"bestie"   },
+  { id:3,  name:"[Bestie] Hellfire Throne",            rate:0.06,  rarity:"bestie"   },
+  { id:4,  name:"[Bestie] Dreaming Jade",              rate:0.8,   rarity:"bestie"   },
+  { id:5,  name:"[Bestie] Head Maid Weepy",            rate:0.95,  rarity:"bestie"   },
+  { id:6,  name:"Astral Ring",                         rate:0.6,   rarity:"special"  },
+  { id:7,  name:"Astral Ring Necklace",                rate:0.6,   rarity:"special"  },
+  { id:8,  name:"Astral Ring Earrings",                rate:0.6,   rarity:"special"  },
+  { id:9,  name:"Purple Cloud Blooming Flower Piece",  rate:0.5,   rarity:"special"  },
+  { id:10, name:"Purple Cloud Flowing Tassel",         rate:0.7,   rarity:"special"  },
+  { id:11, name:"Purple Cloud Beauty Mark",            rate:0.7,   rarity:"special"  },
+  { id:12, name:"Glowing Glass Butterfly",             rate:0.5,   rarity:"special"  },
+  { id:13, name:"Glass Bulb Tail",                     rate:0.7,   rarity:"special"  },
+  { id:14, name:"Opaque Rose Decal",                   rate:0.7,   rarity:"special"  },
+  { id:15, name:"Amber Steel Weapon Exchange Ticket",  rate:0.35,  rarity:"exchange" },
+  { id:16, name:"Pastel Water Drop Weapon Exchange Ticket", rate:0.35, rarity:"exchange"},
+  { id:17, name:"Rubinart Costume Exchange Ticket",    rate:0.45,  rarity:"exchange" },
+  { id:18, name:"[Event] Faded Bestie Star(10)",       rate:15.29, rarity:"event"    },
+  { id:19, name:"[Event] Faded Bestie Star(15)",       rate:14.08, rarity:"event"    },
+  { id:20, name:"[Event] Faded Bestie Star(20)",       rate:12.46, rarity:"event"    },
+  { id:21, name:"Shining Bestie Star(8)",              rate:11.14, rarity:"normal"   },
+  { id:22, name:"Shining Bestie Star(13)",             rate:8.49,  rarity:"normal"   },
+  { id:23, name:"[Event] Rainbow Star",                rate:3.55,  rarity:"event"    },
+  { id:24, name:"[Event] Rainbow Star(2)",             rate:2.25,  rarity:"event"    },
+  { id:25, name:"Item Protection Magic Jelly(200)",    rate:8.0,   rarity:"normal"   },
+  { id:26, name:"Item Protection Magic Jelly(500)",    rate:6.0,   rarity:"normal"   },
+  { id:27, name:"Brooch Ring",                         rate:5.80,  rarity:"normal"   },
+  { id:28, name:"Brooch Ring(2)",                      rate:3.25,  rarity:"normal"   },
+  { id:29, name:"Iona Accessory Selection Box",        rate:0.002, rarity:"special"  },
+  { id:30, name:"Golden Oath",                         rate:1.0,   rarity:"special"  },
+  { id:31, name:"Blessed Golden Plate",                rate:0.04,  rarity:"special"  },
+];
+
+// Build cumulative table
+const total = ITEMS.reduce((s,i)=>s+i.rate,0);
+let cum = 0;
+const CUM_TABLE = ITEMS.map(item => {
+  cum += item.rate;
+  return { ...item, cumRate: cum };
+});
+
+function rollOne() {
+  const r = Math.random() * total;
+  return CUM_TABLE.find(item => item.cumRate >= r) || ITEMS[ITEMS.length-1];
+}
+
+// State
+let lastPull = [];         // items from last pull batch (individual)
+let inventory = {};        // id -> { item, qty }
+let totalPulls = 0;
+
+function pull(n) {
+  lastPull = [];
+  for(let i=0; i<n; i++) lastPull.push(rollOne());
+  totalPulls += n;
+
+  lastPull.forEach(item => {
+    if(inventory[item.id]) inventory[item.id].qty += 1;
+    else inventory[item.id] = { item, qty: 1 };
+  });
+
+  renderPullResults();
+  renderInventory();
+}
+
+function rarityDotClass(r) {
+  return { bestie:'dot-bestie', event:'dot-event', exchange:'dot-exchange', special:'dot-special', normal:'dot-normal' }[r] || 'dot-normal';
+}
+
+function makeCard(item, cls) {
+  const card = document.createElement('div');
+  card.className = cls;
+  card.dataset.rarity = item.rarity;
+  card.innerHTML = `
+    <div class="item-dot ${rarityDotClass(item.rarity)}"></div>
+    <div class="item-info">
+      <div class="item-name" title="${item.name}">${item.name}</div>
+      <div class="item-rate">${item.rate}% chance</div>
+    </div>
+  `;
+  return card;
+}
+
+function renderPullResults() {
+  const grid   = document.getElementById('pullGrid');
+  const header = document.getElementById('resultsHeader');
+  const badge  = document.getElementById('pullCountBadge');
+
+  header.classList.add('visible');
+  badge.textContent = totalPulls + (totalPulls===1?' pull':' pulls');
+
+  grid.innerHTML = '';
+  lastPull.forEach(item => {
+    grid.appendChild(makeCard(item, 'item-card'));
+  });
+}
+
+function renderInventory() {
+  const grid    = document.getElementById('invGrid');
+  const section = document.getElementById('inventorySection');
+  const badge   = document.getElementById('invCountBadge');
+
+  const rarityOrder = {bestie:0, exchange:1, special:2, event:3, normal:4};
+  const sorted = Object.values(inventory).sort((a,b) => {
+    const rd = rarityOrder[a.item.rarity] - rarityOrder[b.item.rarity];
+    return rd !== 0 ? rd : b.qty - a.qty;
+  });
+
+  grid.innerHTML = '';
+  sorted.forEach(({ item, qty }) => {
+    const card = makeCard(item, 'inv-card');
+    if(qty > 1) {
+      const qtyEl = document.createElement('div');
+      qtyEl.className = 'item-qty';
+      qtyEl.textContent = '×' + qty;
+      card.appendChild(qtyEl);
+    }
+    grid.appendChild(card);
+  });
+
+  badge.textContent = sorted.length + ' unique';
+  const wasHidden = grid.classList.contains('hidden');
+  section.style.display = sorted.length ? '' : 'none';
+  if (wasHidden) grid.classList.add('hidden');
+  document.getElementById('invChevron').textContent = wasHidden ? '▸' : '▾';
+}
+
+// Event listeners
+document.getElementById('pull1Btn').addEventListener('click', () => pull(1));
+document.getElementById('pull10Btn').addEventListener('click', () => pull(10));
+document.getElementById('clearBtn').addEventListener('click', () => {
+  lastPull = [];
+  inventory = {};
+  totalPulls = 0;
+  document.getElementById('pullGrid').innerHTML = '';
+  const invGrid = document.getElementById('invGrid');
+  invGrid.innerHTML = '';
+  invGrid.classList.add('hidden');
+  document.getElementById('invChevron').textContent = '▸';
+  document.getElementById('inventorySection').style.display = 'none';
+  document.getElementById('resultsHeader').classList.remove('visible');
+});
+document.getElementById('invToggle').addEventListener('click', () => {
+  const grid    = document.getElementById('invGrid');
+  const chevron = document.getElementById('invChevron');
+  const hidden  = grid.classList.toggle('hidden');
+  chevron.textContent = hidden ? '▸' : '▾';
+});
+document.getElementById('boxVisual').addEventListener('click', () => pull(1));
+</script>
+</body>
+</html>
