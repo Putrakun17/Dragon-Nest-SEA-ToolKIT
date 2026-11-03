@@ -264,7 +264,7 @@ html, body {
   </div>
 
   <ul class="nav-list" role="list">
-    <li class="nav-item active" onclick="selectTool('tool1', this)">
+    <li class="nav-item" onclick="selectTool('tool1', this)">
       <div class="nav-icon" aria-hidden="true">⚔️</div>
       <div>
         <div class="nav-name">Enhancement Calculator</div>
@@ -314,7 +314,7 @@ html, body {
 </nav>
 
 <div class="content-wrap">
-  <iframe class="tool-frame active" id="frame-tool1" src="tool1.html" title="Enhancement Calculator"></iframe>
+  <iframe class="tool-frame" id="frame-tool1" src="tool1.html" title="Enhancement Calculator"></iframe>
   <iframe class="tool-frame" id="frame-tool2" src="tool2.html" title="Deep-rooted Variant Jade"></iframe>
   <iframe class="tool-frame" id="frame-tool3" src="tool3.html" title="Jewel Simulator"></iframe>
   <iframe class="tool-frame" id="frame-tool4" src="tool4.html" title="Geraint's Growth Gacha"></iframe>
@@ -332,6 +332,7 @@ const LABELS = {
   tool7: 'Unpredictable Destiny Box'
 };
 
+const STORAGE_KEY = 'gd_active_tool';
 const menuBtn  = document.getElementById('menuBtn');
 const navPanel = document.getElementById('navPanel');
 const overlay  = document.getElementById('overlay');
@@ -358,19 +359,31 @@ function toggleNav() {
 }
 
 function selectTool(id, el) {
-  // swap active frame
   document.querySelector('.tool-frame.active')?.classList.remove('active');
   document.getElementById('frame-' + id).classList.add('active');
 
-  // swap active nav item
   document.querySelector('.nav-item.active')?.classList.remove('active');
   el.classList.add('active');
 
   label.textContent = LABELS[id];
+  try { localStorage.setItem(STORAGE_KEY, id); } catch(_) {}
   closeNav();
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
+
+// Restore tool terakhir saat load
+(function restore() {
+  let saved = 'tool1';
+  try { saved = localStorage.getItem(STORAGE_KEY) || 'tool1'; } catch(_) {}
+  if (!LABELS[saved]) saved = 'tool1';
+
+  const frame   = document.getElementById('frame-' + saved);
+  const navItem = document.querySelector(`.nav-item:nth-child(${Object.keys(LABELS).indexOf(saved) + 1})`);
+  if (frame)   frame.classList.add('active');
+  if (navItem) navItem.classList.add('active');
+  label.textContent = LABELS[saved];
+})();
 </script>
 </body>
 </html>
