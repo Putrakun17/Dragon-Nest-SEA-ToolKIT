@@ -4,363 +4,373 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold Dragon Toolkit — Enhancement &amp; Jewel Suite</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cinzel+Decorative:wght@700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --gold:#D4A017;--gold-light:#F0C040;--gold-dim:#8B6914;
-  --jade:#2E7D52;--jade-light:#56D68A;
-  --bg:#0A0907;--bg-panel:#15120D;--bg-card:#1B1712;
-  --border:rgba(212,160,23,0.18);--border-strong:rgba(212,160,23,0.4);
-  --text:#EDE0C4;--text-dim:#8B7D60;--text-muted:#5A5040;
-  --shadow:0 20px 60px rgba(0,0,0,0.6);
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;}
-body{
-  font-family:'Inter',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  overflow:hidden;
-  background-image:
-    radial-gradient(ellipse at 15% 20%, rgba(212,160,23,0.05) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 80%, rgba(46,125,82,0.04) 0%, transparent 55%);
+:root {
+  --gold: #D4A017;
+  --gold-lt: #F0C040;
+  --gold-dk: #8B6914;
+  --bg: #0A0907;
+  --bg-nav: #12100A;
+  --border: rgba(212,160,23,.18);
+  --border-hi: rgba(212,160,23,.4);
+  --text: #EDE0C4;
+  --text-dim: #8B7D60;
+  --text-muted: #5A5040;
 }
 
-/* ============ TOPBAR ============ */
-.topbar{
-  height:56px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:0 16px;
-  background:linear-gradient(180deg, rgba(27,23,18,0.95), rgba(15,13,9,0.95));
-  border-bottom:1px solid var(--border);
-  position:relative;
-  z-index:30;
-}
-.menu-btn{
-  width:38px;height:38px;
-  border-radius:8px;
-  border:0.5px solid var(--border-strong);
-  background:rgba(212,160,23,0.08);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  flex-shrink:0;
-  transition:background-color .2s, border-color .2s;
-  position:relative;
-}
-.menu-btn:hover{background:rgba(212,160,23,0.16);border-color:var(--gold);}
-.menu-btn span{
-  position:absolute;
-  width:18px;height:1.6px;
-  background:var(--gold-light);
-  border-radius:1px;
-  transition:transform .25s, opacity .25s, top .25s;
-}
-.menu-btn span:nth-child(1){top:13px;}
-.menu-btn span:nth-child(2){top:18.5px;}
-.menu-btn span:nth-child(3){top:24px;}
-.menu-btn.open span:nth-child(1){top:18.5px;transform:rotate(45deg);}
-.menu-btn.open span:nth-child(2){opacity:0;}
-.menu-btn.open span:nth-child(3){top:18.5px;transform:rotate(-45deg);}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.topbar-title{
-  font-family:'Cinzel',serif;
-  font-weight:700;
-  font-size:15px;
-  letter-spacing:.05em;
-  color:var(--gold-light);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.topbar-title .eyebrow{
-  display:block;
-  font-family:'Inter',sans-serif;
-  font-size:9px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--text-muted);
-  font-weight:500;
-  margin-bottom:2px;
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* ============ OVERLAY ============ */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.55);
-  backdrop-filter:blur(1px);
-  -webkit-backdrop-filter:blur(1px);
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s ease;
-  will-change:opacity;
-  z-index:35;
-}
-.overlay.show{opacity:1;pointer-events:auto;}
-
-/* ============ POPUP NAVBAR (LEFT) ============ */
-.navpanel{
-  position:fixed;
-  top:0;left:0;
-  height:100%;
-  width:300px;
-  max-width:85vw;
-  background:linear-gradient(160deg, #18140E 0%, #100D08 100%);
-  border-right:1px solid var(--border-strong);
-  box-shadow:0 10px 30px rgba(0,0,0,0.5);
-  transform:translate3d(-100%,0,0);
-  transition:transform .32s cubic-bezier(.22,.9,.32,1);
-  will-change:transform;
-  backface-visibility:hidden;
-  z-index:40;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-.navpanel.show{transform:translate3d(0,0,0);}
-
-.nav-head{
-  padding:22px 20px 18px;
-  border-bottom:0.5px solid var(--border);
-  position:relative;
-}
-.nav-head::after{
-  content:'';
-  display:block;
-  width:60px;height:1px;
-  background:linear-gradient(90deg,var(--gold),transparent);
-  margin-top:12px;
-}
-.nav-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:6px;}
-.nav-title{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--gold-light);text-shadow:0 0 24px rgba(212,160,23,0.3);line-height:1.3;}
-.nav-close{
-  position:absolute;top:18px;right:16px;
-  width:30px;height:30px;
-  border-radius:50%;
-  border:0.5px solid var(--border);
-  background:transparent;
-  color:var(--text-dim);
-  cursor:pointer;
-  font-size:16px;
-  display:flex;align-items:center;justify-content:center;
-  transition:color .2s, border-color .2s, background-color .2s;
-}
-.nav-close:hover{color:var(--gold-light);border-color:var(--gold);background:rgba(212,160,23,0.08);}
-
-.nav-list{
-  list-style:none;
-  padding:14px 12px;
-  flex:1;
-  overflow-y:auto;
-}
-.nav-item{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:13px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  margin-bottom:6px;
-  border:0.5px solid transparent;
-  transition:background-color .2s, border-color .2s;
-  position:relative;
-}
-.nav-item:hover{background:rgba(212,160,23,0.06);border-color:var(--border);}
-.nav-item.active{
-  background:rgba(212,160,23,0.1);
-  border-color:var(--border-strong);
-  box-shadow:0 0 18px rgba(212,160,23,0.08) inset;
-}
-.nav-item.active::before{
-  content:'';
-  position:absolute;left:-12px;top:50%;
-  transform:translateY(-50%);
-  width:3px;height:60%;
-  background:var(--gold-light);
-  border-radius:0 3px 3px 0;
-  box-shadow:0 0 10px var(--gold-light);
-}
-.nav-icon{
-  width:38px;height:38px;
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
-  flex-shrink:0;
-  background:rgba(0,0,0,0.3);
-  border:0.5px solid var(--border);
-}
-.nav-item.active .nav-icon{border-color:var(--gold);background:rgba(212,160,23,0.12);}
-.nav-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
-.nav-name{font-family:'Cinzel',serif;font-size:13.5px;font-weight:600;letter-spacing:.02em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.nav-item.active .nav-name{color:var(--gold-light);}
-.nav-desc{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-.nav-foot{
-  padding:16px 20px 20px;
-  border-top:0.5px solid var(--border);
-  font-size:10.5px;
-  color:var(--text-muted);
-  letter-spacing:.04em;
-  line-height:1.6;
-}
-.nav-foot b{color:var(--text-dim);}
-
-/* ============ CONTENT AREA ============ */
-.content-wrap{
-  position:relative;
-  height:calc(100% - 56px);
-  width:100%;
-}
-.tool-frame{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-  background:var(--bg);
-  opacity:0;
-  visibility:hidden;
-  transition:opacity .25s ease;
-  pointer-events:none;
-}
-.tool-frame.active{
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
+/* ── TOPBAR ── */
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  background: rgba(15,13,9,.96);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 30;
 }
 
-/* scrollbar */
-.nav-list::-webkit-scrollbar{width:5px;}
-.nav-list::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px;}
+/* hamburger */
+.menu-btn {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--border-hi);
+  background: rgba(212,160,23,.07);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background .2s, border-color .2s;
+}
+.menu-btn:hover { background: rgba(212,160,23,.15); border-color: var(--gold); }
+.menu-btn span {
+  display: block;
+  width: 18px; height: 1.5px;
+  background: var(--gold-lt);
+  border-radius: 1px;
+  transition: transform .25s, opacity .25s;
+  transform-origin: center;
+}
+.menu-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.menu-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-@media (max-width:480px){
-  .navpanel{width:88vw;}
+.topbar-title {
+  overflow: hidden;
+  min-width: 0;
+}
+.topbar-eyebrow {
+  display: block;
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.topbar-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--gold-lt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── OVERLAY ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  z-index: 35;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+
+/* ── NAV PANEL ── */
+.navpanel {
+  position: fixed;
+  top: 0; left: 0;
+  height: 100%;
+  width: 300px;
+  max-width: 88vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-nav);
+  border-right: 1px solid var(--border-hi);
+  box-shadow: 6px 0 30px rgba(0,0,0,.5);
+  transform: translateX(-100%);
+  transition: transform .3s cubic-bezier(.22,.9,.32,1);
+  z-index: 40;
+  overflow: hidden;
+}
+.navpanel.show { transform: translateX(0); }
+
+.nav-head {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-head-eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dk); margin-bottom: 6px; }
+.nav-head-title { font-family: 'Cinzel Decorative', serif; font-size: 18px; color: var(--gold-lt); line-height: 1.3; }
+.nav-close {
+  position: absolute; top: 18px; right: 16px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.nav-close:hover { color: var(--gold-lt); border-color: var(--gold); background: rgba(212,160,23,.08); }
+
+.nav-list {
+  list-style: none;
+  padding: 12px 10px;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hi) transparent;
+}
+.nav-list::-webkit-scrollbar { width: 5px; }
+.nav-list::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: background .2s, border-color .2s;
+}
+.nav-item:hover { background: rgba(212,160,23,.06); border-color: var(--border); }
+.nav-item.active {
+  background: rgba(212,160,23,.1);
+  border-color: var(--border-hi);
+}
+
+.nav-icon {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: rgba(0,0,0,.3);
+  border: 1px solid var(--border);
+  transition: border-color .2s, background .2s;
+}
+.nav-item.active .nav-icon { border-color: var(--gold); background: rgba(212,160,23,.12); }
+
+.nav-name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-item.active .nav-name { color: var(--gold-lt); }
+.nav-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.nav-foot {
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.nav-foot b { color: var(--text-dim); }
+
+/* ── CONTENT ── */
+.content-wrap {
+  position: relative;
+  height: calc(100% - 56px);
+}
+
+.tool-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--bg);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .22s;
+  pointer-events: none;
+}
+.tool-frame.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <button class="menu-btn" id="menuBtn" onclick="toggleNav()" aria-label="Buka menu">
+  <button class="menu-btn" id="menuBtn" onclick="toggleNav()" aria-label="Buka menu" aria-expanded="false" aria-controls="navPanel">
     <span></span><span></span><span></span>
   </button>
   <div class="topbar-title">
-    <span class="eyebrow">Gold Dragon Toolkit</span>
-    <span id="topbarLabel">Enhancement Calculator</span>
+    <span class="topbar-eyebrow">Gold Dragon Toolkit</span>
+    <span class="topbar-label" id="topbarLabel">Enhancement Calculator</span>
   </div>
 </div>
 
-<div class="overlay" id="overlay" onclick="closeNav()"></div>
+<div class="overlay" id="overlay" onclick="closeNav()" aria-hidden="true"></div>
 
-<nav class="navpanel" id="navPanel">
+<nav class="navpanel" id="navPanel" aria-label="Tool navigation" aria-hidden="true">
   <div class="nav-head">
     <button class="nav-close" onclick="closeNav()" aria-label="Tutup menu">&#10005;</button>
-    <div class="nav-title">Dragon Nest<br>Toolkit</div>
+    <div class="nav-head-eyebrow">Navigation</div>
+    <div class="nav-head-title">Dragon Nest<br>Toolkit</div>
   </div>
 
-  <ul class="nav-list">
-    <li class="nav-item active" data-tool="tool1" onclick="selectTool('tool1', this)">
-      <div class="nav-icon">&#9876;&#65039;</div>
-      <div class="nav-text">
-        <span class="nav-name">Enhancement Calculator</span>
-        <span class="nav-desc">Gold Dragon weapon &amp; armor +0&rarr;+20</span>
+  <ul class="nav-list" role="list">
+    <li class="nav-item active" onclick="selectTool('tool1', this)">
+      <div class="nav-icon" aria-hidden="true">⚔️</div>
+      <div>
+        <div class="nav-name">Enhancement Calculator</div>
+        <div class="nav-desc">Gold Dragon weapon &amp; armor +0→+20</div>
       </div>
     </li>
-    <li class="nav-item" data-tool="tool2" onclick="selectTool('tool2', this)">
-      <div class="nav-icon">&#127807;</div>
-      <div class="nav-text">
-        <span class="nav-name">Deep-rooted Variant Jade</span>
-        <span class="nav-desc">Legend enhancement +0&rarr;+50</span>
+    <li class="nav-item" onclick="selectTool('tool2', this)">
+      <div class="nav-icon" aria-hidden="true">🌿</div>
+      <div>
+        <div class="nav-name">Deep-rooted Variant Jade</div>
+        <div class="nav-desc">Legend enhancement +0→+50</div>
       </div>
     </li>
-    <li class="nav-item" data-tool="tool3" onclick="selectTool('tool3', this)">
-      <div class="nav-icon">&#128142;</div>
-      <div class="nav-text">
-        <span class="nav-name">Jewel Simulator</span>
-        <span class="nav-desc">Gacha stat &amp; distribusi roll</span>
+    <li class="nav-item" onclick="selectTool('tool3', this)">
+      <div class="nav-icon" aria-hidden="true">💎</div>
+      <div>
+        <div class="nav-name">Jewel Simulator</div>
+        <div class="nav-desc">Gacha stat &amp; distribusi roll</div>
       </div>
     </li>
-    <li class="nav-item" data-tool="tool4" onclick="selectTool('tool4', this)">
-      <div class="nav-icon">&#127873;</div>
-      <div class="nav-text">
-        <span class="nav-name">Geraint's Growth Gacha</span>
-        <span class="nav-desc">Buka box sampai dapat target</span>
+    <li class="nav-item" onclick="selectTool('tool4', this)">
+      <div class="nav-icon" aria-hidden="true">🎁</div>
+      <div>
+        <div class="nav-name">Geraint's Growth Gacha</div>
+        <div class="nav-desc">Buka box sampai dapat target</div>
       </div>
     </li>
-    <li class="nav-item" data-tool="tool6" onclick="selectTool('tool6', this)">
-      <div class="nav-icon">&#128083;</div>
-      <div class="nav-text">
-        <span class="nav-name">Claw Simulation</span>
-        <span class="nav-desc">Rare &amp; Epic gacha pool simulator</span>
+    <li class="nav-item" onclick="selectTool('tool6', this)">
+      <div class="nav-icon" aria-hidden="true">👛</div>
+      <div>
+        <div class="nav-name">Claw Simulation</div>
+        <div class="nav-desc">Rare &amp; Epic gacha pool simulator</div>
       </div>
     </li>
-    <li class="nav-item" data-tool="tool7" onclick="selectTool('tool7', this)">
-      <div class="nav-icon">&#10024;</div>
-      <div class="nav-text">
-        <span class="nav-name">Unpredictable Destiny Box</span>
-        <span class="nav-desc">October 2026 gacha simulator</span>
+    <li class="nav-item" onclick="selectTool('tool7', this)">
+      <div class="nav-icon" aria-hidden="true">✨</div>
+      <div>
+        <div class="nav-name">Unpredictable Destiny Box</div>
+        <div class="nav-desc">October 2026 gacha simulator</div>
       </div>
     </li>
   </ul>
 
   <div class="nav-foot">
-    <b>Tips:</b> Klik ikon &#9776; kapan saja untuk berpindah simulator. Setiap tool berjalan independen dan menyimpan progresnya sendiri selama tab ini terbuka.
+    <b>Tips:</b> Klik ☰ kapan saja untuk berpindah simulator. Setiap tool berjalan independen dan menyimpan progresnya sendiri.
   </div>
 </nav>
 
 <div class="content-wrap">
-  <iframe class="tool-frame active" id="frame-tool1" src="tool1.html"></iframe>
-  <iframe class="tool-frame" id="frame-tool2" src="tool2.html"></iframe>
-  <iframe class="tool-frame" id="frame-tool3" src="tool3.html"></iframe>
-  <iframe class="tool-frame" id="frame-tool4" src="tool4.html"></iframe>
-  <iframe class="tool-frame" id="frame-tool6" src="tool6.html"></iframe>
-  <iframe class="tool-frame" id="frame-tool7" src="tool7.html"></iframe>
+  <iframe class="tool-frame active" id="frame-tool1" src="tool1.html" title="Enhancement Calculator"></iframe>
+  <iframe class="tool-frame" id="frame-tool2" src="tool2.html" title="Deep-rooted Variant Jade"></iframe>
+  <iframe class="tool-frame" id="frame-tool3" src="tool3.html" title="Jewel Simulator"></iframe>
+  <iframe class="tool-frame" id="frame-tool4" src="tool4.html" title="Geraint's Growth Gacha"></iframe>
+  <iframe class="tool-frame" id="frame-tool6" src="tool6.html" title="Claw Simulation"></iframe>
+  <iframe class="tool-frame" id="frame-tool7" src="tool7.html" title="Unpredictable Destiny Box"></iframe>
 </div>
 
 <script>
-const labels = {
+const LABELS = {
   tool1: 'Enhancement Calculator',
   tool2: 'Deep-rooted Variant Jade',
   tool3: 'Jewel Simulator',
   tool4: "Geraint's Growth Gacha",
-  tool6: "Claw Simulation",
-  tool7: "Unpredictable Destiny Box"
+  tool6: 'Claw Simulation',
+  tool7: 'Unpredictable Destiny Box'
 };
 
-function toggleNav(){
-  const panel = document.getElementById('navPanel');
-  const isOpen = panel.classList.contains('show');
-  if(isOpen){ closeNav(); } else { openNav(); }
-}
-function openNav(){
-  document.getElementById('navPanel').classList.add('show');
-  document.getElementById('overlay').classList.add('show');
-  document.getElementById('menuBtn').classList.add('open');
-}
-function closeNav(){
-  document.getElementById('navPanel').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('menuBtn').classList.remove('open');
+const menuBtn  = document.getElementById('menuBtn');
+const navPanel = document.getElementById('navPanel');
+const overlay  = document.getElementById('overlay');
+const label    = document.getElementById('topbarLabel');
+
+function openNav() {
+  navPanel.classList.add('show');
+  overlay.classList.add('show');
+  menuBtn.classList.add('open');
+  menuBtn.setAttribute('aria-expanded', 'true');
+  navPanel.setAttribute('aria-hidden', 'false');
 }
 
-function selectTool(id, el){
-  document.querySelectorAll('.tool-frame').forEach(f => f.classList.remove('active'));
+function closeNav() {
+  navPanel.classList.remove('show');
+  overlay.classList.remove('show');
+  menuBtn.classList.remove('open');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  navPanel.setAttribute('aria-hidden', 'true');
+}
+
+function toggleNav() {
+  navPanel.classList.contains('show') ? closeNav() : openNav();
+}
+
+function selectTool(id, el) {
+  // swap active frame
+  document.querySelector('.tool-frame.active')?.classList.remove('active');
   document.getElementById('frame-' + id).classList.add('active');
 
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  // swap active nav item
+  document.querySelector('.nav-item.active')?.classList.remove('active');
   el.classList.add('active');
 
-  document.getElementById('topbarLabel').textContent = labels[id];
-
+  label.textContent = LABELS[id];
   closeNav();
 }
 
-// Close nav with Escape key
-document.addEventListener('keydown', (e) => {
-  if(e.key === 'Escape') closeNav();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 </script>
 </body>
 </html>
